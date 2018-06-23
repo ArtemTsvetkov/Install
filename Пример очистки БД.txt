@@ -1,0 +1,4 @@
+DELETE FROM History
+DELETE FROM Software
+DELETE FROM Users
+DELETE FROM Vendor

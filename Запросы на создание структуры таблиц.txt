@@ -1,0 +1,33 @@
+CREATE TABLE Users
+(
+	UserID int NOT NULL PRIMARY KEY IDENTITY(0,1),
+	name char(30) NOT NULL,
+	Host char(50) NOT NULL
+);
+
+CREATE TABLE Vendor
+(
+	VendorID int NOT NULL PRIMARY KEY IDENTITY(0,1),
+	Name char(40) NOT NULL,
+	AmountOfInvestments float NOT NULL
+);
+
+CREATE TABLE Software
+(
+	SoftwareID int NOT NULL PRIMARY KEY IDENTITY(0,1),
+	VendorID int FOREIGN KEY REFERENCES Vendor(VendorID),
+	Name char(40) NOT NULL,
+	NumberOfPurchased int NOT NULL,
+	Code char(30) NOT NULL
+);
+
+CREATE TABLE History
+(
+	ConnectionID bigint NOT NULL PRIMARY KEY IDENTITY(0,1),
+	UserID int FOREIGN KEY REFERENCES Users(UserID),
+	SoftwareID int FOREIGN KEY REFERENCES Software(SoftwareID),
+	DateIN date,
+	DateExit date,
+	TimeIN time,
+	TimeExit time
+);
