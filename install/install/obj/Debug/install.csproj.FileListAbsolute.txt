@@ -7,3 +7,12 @@ D:\Files\MsVisualProjects\install\install\obj\Debug\install.Properties.Resources
 D:\Files\MsVisualProjects\install\install\obj\Debug\install.csproj.GenerateResource.Cache
 D:\Files\MsVisualProjects\install\install\obj\Debug\install.exe
 D:\Files\MsVisualProjects\install\install\obj\Debug\install.pdb
+D:\Files\MsVisualProjects\Diplom\Install\install\install\bin\Debug\install.exe.config
+D:\Files\MsVisualProjects\Diplom\Install\install\install\obj\Debug\install.exe
+D:\Files\MsVisualProjects\Diplom\Install\install\install\obj\Debug\install.pdb
+D:\Files\MsVisualProjects\Diplom\Install\install\install\obj\Debug\install.csprojResolveAssemblyReference.cache
+D:\Files\MsVisualProjects\Diplom\Install\install\install\obj\Debug\install.Form1.resources
+D:\Files\MsVisualProjects\Diplom\Install\install\install\obj\Debug\install.Properties.Resources.resources
+D:\Files\MsVisualProjects\Diplom\Install\install\install\obj\Debug\install.csproj.GenerateResource.Cache
+D:\Files\MsVisualProjects\Diplom\Install\install\install\bin\Debug\install.exe
+D:\Files\MsVisualProjects\Diplom\Install\install\install\bin\Debug\install.pdb

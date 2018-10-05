@@ -1,4 +1,10 @@
-﻿using System;
+﻿using install.ExceptionHandler.Concrete;
+using install.ExceptionHandler.Interfaces;
+using install.ExceptionHandler.View.Information.PopupWindow;
+using install.Exceptions;
+using install.Interfaces.Data;
+using install.WorkWithDataBase.MsSqlServer;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,28 +19,59 @@ namespace install
 {
     public partial class Form1 : Form
     {
+        private bool installParser = true;
+
         public Form1()
         {
             InitializeComponent();
+            //
+            //Exception handler
+            //
+            ConcreteExceptionHandlerInitializer.initThisExceptionHandler(
+                ExceptionHandler.Concrete.ExceptionHandler.getInstance());
             //настройка переключателя
             tabControl1.Appearance = TabAppearance.FlatButtons;
             tabControl1.ItemSize = new Size(0, 1);
             tabControl1.SizeMode = TabSizeMode.Fixed;
             tabControl1.TabStop = false;
+            tabControl1.SelectedIndex = 7;
             radioButton1.Checked = true;
             textBox5.Visible = false;
             label25.Visible = false;
             button24.Visible = false;
             radioButton3.Checked = true;
-            //поля ввода пароля бд
-            textBox4.Visible = false;
-            label17.Visible = false;
+            checkBox2.Checked = true;
             //добавление колонок в таблицу
             DataGridViewTextBoxColumn coefficient0;
             coefficient0 = new DataGridViewTextBoxColumn();
             coefficient0.Width = 363;
             coefficient0.HeaderText = "Пути к логам";
             dataGridView1.Columns.Add(coefficient0);
+        }
+
+        private bool configProxyForLoadDataFromBDAndExecute(string connectionString)
+        {
+            try
+            {
+                DataWorker<MsSQLServerStateFields, DataSet> accessProxy = new MsSQLServerProxy();
+                MsSQLServerStateFields configProxy =
+                    new MsSQLServerStateFields(connectionString);
+                accessProxy.setConfig(configProxy);
+                accessProxy.connect();
+                ExceptionViewInterface<InformationPopupWindowConfig> view = 
+                    new InformationPopupWindow();
+                InformationPopupWindowConfig config = new InformationPopupWindowConfig(
+                    "Соединение установлено");
+                view.setConfig(config);
+                view.show();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                ExceptionHandler.Concrete.ExceptionHandler.getInstance().processing(
+                    new NoDataBaseConnection());
+                return false;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -66,6 +103,16 @@ namespace install
                 if (no_errors == true)
                 {
                     tabControl1.SelectTab(1);
+                    if(installParser)
+                    {
+                        button28.Visible = true;
+                        button6.Visible = false;
+                    }
+                    else
+                    {
+                        button28.Visible = false;
+                        button6.Visible = true;
+                    }
                 }
                 else
                 {
@@ -92,7 +139,7 @@ namespace install
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (checkBox2.CheckState == CheckState.Checked)
+            /*if (checkBox2.CheckState == CheckState.Checked)
             {
                 if (textBox4.Text != "" & textBox2.Text != "" & textBox6.Text != "")
                 {
@@ -118,6 +165,23 @@ namespace install
                     string caption = "Ошибка";
                     DialogResult result;
                     result = MessageBox.Show(message, caption);
+                }
+            }*/
+            if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
+            {
+                if (configProxyForLoadDataFromBDAndExecute(textBox2.Text))
+                {
+                    tabControl1.SelectedIndex = 2;
+                }
+            }
+            else
+            {
+                if (checkTextBoxesWithDBParam())
+                {
+                    if (configProxyForLoadDataFromBDAndExecute(textBox2.Text))
+                    {
+                        tabControl1.SelectedIndex = 2;
+                    }
                 }
             }
         }
@@ -214,13 +278,17 @@ namespace install
         {
             if(checkBox2.CheckState == CheckState.Checked)
             {
-                textBox4.Visible = true;
-                label17.Visible = true;
+                textBox2.ReadOnly = true;
+                textBox4.Enabled = true;
+                textBox6.Enabled = true;
             }
             else
             {
-                textBox4.Visible = false;
-                label17.Visible = false;
+                textBox2.ReadOnly = false;
+                textBox4.Enabled = false;
+                textBox6.Enabled = false;
+                textBox4.Text = "";
+                textBox6.Text = "";
             }
         }
 
@@ -473,6 +541,100 @@ namespace install
                 return;
             }
             textBox5.Text = folderBrowserDialog1.SelectedPath;
+        }
+
+        private void button25_Click(object sender, EventArgs e)
+        {
+            installParser = true;
+            tabControl1.SelectedIndex = 0;
+        }
+
+        private void button26_Click(object sender, EventArgs e)
+        {
+            installParser = false;
+            tabControl1.SelectedIndex = 0;
+        }
+
+        private void button27_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectedIndex = 7;
+        }
+
+        private void button8_Click_1(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
+            {
+                configProxyForLoadDataFromBDAndExecute(textBox2.Text);
+            }
+            else
+            {
+                if (checkTextBoxesWithDBParam())
+                {
+                    configProxyForLoadDataFromBDAndExecute(textBox2.Text);
+                }
+            }
+        }
+
+        private bool checkTextBoxesWithDBParam()
+        {
+            if (!textBox4.Text.Equals(""))
+            {
+                if (!textBox6.Text.Equals(""))
+                {
+                    return true;
+                }
+                else
+                {
+                    string message = "Не все поля заполнены.";
+                    string caption = "Ошибка";
+                    DialogResult result;
+                    result = MessageBox.Show(message, caption);
+                    return false;
+                }
+            }
+            else
+            {
+                string message = "Не все поля заполнены.";
+                string caption = "Ошибка";
+                DialogResult result;
+                result = MessageBox.Show(message, caption);
+                return false;
+            }
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            if (!textBox4.Text.Equals(""))
+            {
+                if (!textBox6.Text.Equals(""))
+                {
+                    textBox2.Text = "Provider=" + textBox4.Text + ";Data Source=" +
+                        textBox6.Text + ";" +
+                        "Integrated Security=SSPI;Initial Catalog=LicenseInformationSystem";
+                }
+            }
+        }
+
+        private void textBox6_TextChanged(object sender, EventArgs e)
+        {
+            if (!textBox4.Text.Equals(""))
+            {
+                if (!textBox6.Text.Equals(""))
+                {
+                    textBox2.Text = "Provider=" + textBox4.Text + ";Data Source=" +
+                        textBox6.Text + ";" +
+                        "Integrated Security=SSPI;Initial Catalog=LicenseInformationSystem";
+                }
+            }
+        }
+
+        private void button28_Click(object sender, EventArgs e)
+        {
+
+
+
+
+            tabControl1.SelectedIndex = 6;
         }
     }
 }
