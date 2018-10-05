@@ -2,6 +2,7 @@
 using install.ExceptionHandler.Interfaces;
 using install.ExceptionHandler.View.Information.PopupWindow;
 using install.Exceptions;
+using install.IniComponent;
 using install.Interfaces.Data;
 using install.WorkWithDataBase.MsSqlServer;
 using System;
@@ -103,7 +104,7 @@ namespace install
                 if (no_errors == true)
                 {
                     tabControl1.SelectTab(1);
-                    if(installParser)
+                    if(!installParser)
                     {
                         button28.Visible = true;
                         button6.Visible = false;
@@ -139,34 +140,6 @@ namespace install
 
         private void button6_Click(object sender, EventArgs e)
         {
-            /*if (checkBox2.CheckState == CheckState.Checked)
-            {
-                if (textBox4.Text != "" & textBox2.Text != "" & textBox6.Text != "")
-                {
-                    tabControl1.SelectTab(2);
-                }
-                else
-                {
-                    string message = "Не все поля заполнены.";
-                    string caption = "Ошибка";
-                    DialogResult result;
-                    result = MessageBox.Show(message, caption);
-                }
-            }
-            else
-            {
-                if (textBox2.Text != "")
-                {
-                    tabControl1.SelectTab(2);
-                }
-                else
-                {
-                    string message = "Не все поля заполнены.";
-                    string caption = "Ошибка";
-                    DialogResult result;
-                    result = MessageBox.Show(message, caption);
-                }
-            }*/
             if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
             {
                 if (configProxyForLoadDataFromBDAndExecute(textBox2.Text))
@@ -349,21 +322,18 @@ namespace install
 
         private void button18_Click(object sender, EventArgs e)
         {
-            if((radioButton4.Checked == true & textBox5.Text!="") | radioButton3.Checked == true)
+            if ((radioButton4.Checked == true & textBox5.Text!="") | radioButton3.Checked == true)
                 try
                 {
                     string last_record_s_time = "";
-                    string path_of_data_base = "";
                     string path_of_program;
-                    string password_of_data_base = "";
                     List<string> path_of_log_file = new List<string>();
-                    string server_host = "";
-                    bool done_to_install = true;//если что-то не получится, программа не будет выполнена до конца, все файлы и настройки системы не изменятся
 
 
 
                     //обновление пути установки
                     path_of_program = textBox1.Text;
+                    IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
 
                     //обновление даты последней записи в бд
                     if (checkBox1.CheckState == CheckState.Unchecked)//если она существует
@@ -398,102 +368,79 @@ namespace install
                         last_record_s_time = "12.12.1970_12:12:12";
                     }
 
-                    //обновление пути к базе данных
-                    path_of_data_base = textBox2.Text;
-
-                    //если есть пароль, то запоминаю
-                    if (checkBox2.CheckState == CheckState.Checked)
-                    {
-                        password_of_data_base = textBox4.Text;
-                    }
-
                     //создание массива путей к логам
                     for (int i = 0; i < dataGridView1.RowCount; i++)
                     {
                         path_of_log_file.Add(dataGridView1.Rows[i].Cells[0].Value.ToString());
                     }
 
-                    //получение имени сервера
-                    WorkWithWindowsCommandLine wwwcl = new WorkWithWindowsCommandLine();
-                    string command = @"/C hostname";
-                    server_host = wwwcl.Run_command(command);//в переменную server_host записываю значение только чтобы не создавать нувую переменную, здесь просто лежит ответ командной строки
-                    if (server_host == "")
+                    //копирование файлов в новую директорию
+                    CopyFile(Application.StartupPath + "\\ServerKeyLogsParser.exe", path_of_program + "\\ServerKeyLogsParser.exe");
+
+
+                    //создание файла настроек и файла запуска приложения
+                    if(radioButton4.Checked == true)
                     {
-                        string message = "Не удалось получить название сервера.";
-                        string caption = "Ошибка";
-                        DialogResult result;
-                        result = MessageBox.Show(message, caption);
-                        done_to_install = false;
+                        //buf.Add(textBox5.Text + " PathAvevasParser");
+                        INI.Write("Settings", "pathAvevasParser", textBox5.Text);
                     }
-                    else
+                    for (int i = 0; i < path_of_log_file.Count(); i++)
                     {
-                        //удаление лишних символов
-                        server_host = server_host.Remove((server_host.Count() - 2), 2);
-                    }
-
-
-
-                    if (done_to_install != false)
-                    {
-                        //копирование файлов в новую директорию
-                        CopyFile(Application.StartupPath + "\\ServerKeyLogsParser.exe", path_of_program + "\\ServerKeyLogsParser.exe");
-
-
-                        //создание файла настроек и файла запуска приложения
-                        ReadWriteTextFile rwtf = new ReadWriteTextFile();
-                        List<string> buf = new List<string>();
-                        buf.Add(server_host + " server's_host");
-                        //buf.Add(last_record_s_time + " last_record's_time");
-                        if (password_of_data_base != "")
+                        if(i==0)
                         {
-                            buf.Add(password_of_data_base + " password");
-                        }
-                        buf.Add(path_of_data_base + " path_of_data_base");
-                        if(radioButton4.Checked == true)
-                        {
-                            buf.Add(textBox5.Text + " PathAvevasParser");
-                        }
-                        for (int i = 0; i < path_of_log_file.Count(); i++)
-                        {
-                            buf.Add(path_of_log_file.ElementAt(i) + " path_of_log_file " + last_record_s_time);
-                        }
-                        buf.Add(textBox6.Text + " table");
-                        rwtf.Write_to_file(buf, path_of_program + "\\settings.txt", 0);
-
-
-                        buf.Clear();
-                        buf.Add(@"@echo off");
-                        buf.Add("cd /d " + path_of_program);
-                        buf.Add(path_of_program + "\\ServerKeyLogsParser.exe");
-                        rwtf.Write_to_file(buf, path_of_program + "\\RunServerKeyLogsParser.bat", 0);
-
-
-                        buf.Clear();
-                        buf.Add(@"@echo off");
-                        buf.Add("cd /d " + textBox5.Text);
-                        buf.Add("lsmon aveva > "+ path_of_program + "\\output.txt");
-                        rwtf.Write_to_file(buf, path_of_program + "\\CreateAvevasLog.bat", 0);
-
-
-                        //создание задания для планировщика заданий
-                        if (checkBox1.Checked == true)
-                        {
-                            command = @"/C SCHTASKS /Create /SC MINUTE /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
+                            INI.Write("Settings", "pathOfLogFile", path_of_log_file.ElementAt(0));
+                            INI.Write("Settings", "lastDateOfLogFile", last_record_s_time);
                         }
                         else
                         {
-                            command = @"/C SCHTASKS /Create /SC HOURLY /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
+                            INI.Write("Settings", "pathOfLogFile" + i.ToString(), 
+                                path_of_log_file.ElementAt(i));
+                            INI.Write("Settings", "lastDateOfLogFile"
+                                    + i.ToString(), last_record_s_time);
                         }
-                        server_host = wwwcl.Run_command(command);//в переменную server_host записываю значение только чтобы не создавать нувую переменную, здесь просто лежит ответ командной строки
-                        if (server_host == "")
-                        {
-                            string message = "Не удалось создать задание для планировщика заданий.";
-                            string caption = "Ошибка";
-                            DialogResult result;
-                            result = MessageBox.Show(message, caption);
-                        }
-                        tabControl1.SelectTab(6);
                     }
+
+                    INI.Write("Settings", "connectionString", textBox2.Text);
+
+                    ReadWriteTextFile rwtf = new ReadWriteTextFile();
+                    List<string> buf = new List<string>();
+                    buf.Add(@"@echo off");
+                    buf.Add("cd /d " + path_of_program);
+                    buf.Add(path_of_program + "\\ServerKeyLogsParser.exe");
+                    rwtf.Write_to_file(buf, path_of_program + "\\RunServerKeyLogsParser.bat", 0);
+
+
+                    buf.Clear();
+                    buf.Add(@"@echo off");
+                    buf.Add("cd /d " + textBox5.Text);
+                    buf.Add("lsmon aveva > "+ path_of_program + "\\output.txt");
+                    rwtf.Write_to_file(buf, path_of_program + "\\CreateAvevasLog.bat", 0);
+
+                    /*ДЛЯ ТЕСТОВ ОТКЛЮЧИЛ
+                    //создание задания для планировщика заданий
+                    string command;
+                    if (radioButton1.Checked == true)
+                    {
+                        command = @"/C SCHTASKS /Create /SC MINUTE /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
+                    }
+                    else
+                    {
+                        command = @"/C SCHTASKS /Create /SC HOURLY /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
+                    }
+                    //в переменную check записываю значение только чтобы не создавать 
+                    //новую переменную, здесь просто лежит ответ командной строки
+                    WorkWithWindowsCommandLine wwwcl = new WorkWithWindowsCommandLine();
+                    string check = wwwcl.Run_command(command);
+                    if (check == "")
+                    {
+                        string message = "Не удалось создать задание для планировщика заданий.";
+                        string caption = "Ошибка";
+                        DialogResult result;
+                        result = MessageBox.Show(message, caption);
+                    }*/
+
+
+                    tabControl1.SelectTab(6);
                 }
                 catch (Exception ex)
                 {
@@ -630,9 +577,12 @@ namespace install
 
         private void button28_Click(object sender, EventArgs e)
         {
-
-
-
+            //обновление пути установки
+            string path_of_program = textBox1.Text;
+            //копирование файлов в новую директорию
+            IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
+            INI.Write("Settings", "connectionString", textBox2.Text);
+            CopyFile(Application.StartupPath + "\\Analytics.exe", path_of_program + "\\Analytics.exe");
 
             tabControl1.SelectedIndex = 6;
         }
