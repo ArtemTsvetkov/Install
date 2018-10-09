@@ -35,7 +35,7 @@ CREATE TABLE History
 CREATE TABLE UST
 (
 	Login char(30) NOT NULL PRIMARY KEY,
-	Password char(50) NOT NULL,
-	Sult char(10) NOT NULL,
+	Password char(70) NOT NULL,
+	Sult char(25) NOT NULL,
 	Status int NOT NULL
 );

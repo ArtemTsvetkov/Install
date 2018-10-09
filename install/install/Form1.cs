@@ -1,4 +1,11 @@
-﻿using System;
+﻿using install.ExceptionHandler.Concrete;
+using install.ExceptionHandler.Interfaces;
+using install.ExceptionHandler.View.Information.PopupWindow;
+using install.Exceptions;
+using install.IniComponent;
+using install.Interfaces.Data;
+using install.WorkWithDataBase.MsSqlServer;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,28 +20,59 @@ namespace install
 {
     public partial class Form1 : Form
     {
+        private bool installParser = true;
+
         public Form1()
         {
             InitializeComponent();
+            //
+            //Exception handler
+            //
+            ConcreteExceptionHandlerInitializer.initThisExceptionHandler(
+                ExceptionHandler.Concrete.ExceptionHandler.getInstance());
             //настройка переключателя
             tabControl1.Appearance = TabAppearance.FlatButtons;
             tabControl1.ItemSize = new Size(0, 1);
             tabControl1.SizeMode = TabSizeMode.Fixed;
             tabControl1.TabStop = false;
+            tabControl1.SelectedIndex = 7;
             radioButton1.Checked = true;
             textBox5.Visible = false;
             label25.Visible = false;
             button24.Visible = false;
             radioButton3.Checked = true;
-            //поля ввода пароля бд
-            textBox4.Visible = false;
-            label17.Visible = false;
+            checkBox2.Checked = true;
             //добавление колонок в таблицу
             DataGridViewTextBoxColumn coefficient0;
             coefficient0 = new DataGridViewTextBoxColumn();
             coefficient0.Width = 363;
             coefficient0.HeaderText = "Пути к логам";
             dataGridView1.Columns.Add(coefficient0);
+        }
+
+        private bool configProxyForLoadDataFromBDAndExecute(string connectionString)
+        {
+            try
+            {
+                DataWorker<MsSQLServerStateFields, DataSet> accessProxy = new MsSQLServerProxy();
+                MsSQLServerStateFields configProxy =
+                    new MsSQLServerStateFields(connectionString);
+                accessProxy.setConfig(configProxy);
+                accessProxy.connect();
+                ExceptionViewInterface<InformationPopupWindowConfig> view = 
+                    new InformationPopupWindow();
+                InformationPopupWindowConfig config = new InformationPopupWindowConfig(
+                    "Соединение установлено");
+                view.setConfig(config);
+                view.show();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                ExceptionHandler.Concrete.ExceptionHandler.getInstance().processing(
+                    new NoDataBaseConnection());
+                return false;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -66,6 +104,16 @@ namespace install
                 if (no_errors == true)
                 {
                     tabControl1.SelectTab(1);
+                    if(!installParser)
+                    {
+                        button28.Visible = true;
+                        button6.Visible = false;
+                    }
+                    else
+                    {
+                        button28.Visible = false;
+                        button6.Visible = true;
+                    }
                 }
                 else
                 {
@@ -92,32 +140,21 @@ namespace install
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (checkBox2.CheckState == CheckState.Checked)
+            if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
             {
-                if (textBox4.Text != "" & textBox2.Text != "" & textBox6.Text != "")
+                if (configProxyForLoadDataFromBDAndExecute(textBox2.Text))
                 {
-                    tabControl1.SelectTab(2);
-                }
-                else
-                {
-                    string message = "Не все поля заполнены.";
-                    string caption = "Ошибка";
-                    DialogResult result;
-                    result = MessageBox.Show(message, caption);
+                    tabControl1.SelectedIndex = 2;
                 }
             }
             else
             {
-                if (textBox2.Text != "")
+                if (checkTextBoxesWithDBParam())
                 {
-                    tabControl1.SelectTab(2);
-                }
-                else
-                {
-                    string message = "Не все поля заполнены.";
-                    string caption = "Ошибка";
-                    DialogResult result;
-                    result = MessageBox.Show(message, caption);
+                    if (configProxyForLoadDataFromBDAndExecute(textBox2.Text))
+                    {
+                        tabControl1.SelectedIndex = 2;
+                    }
                 }
             }
         }
@@ -179,6 +216,11 @@ namespace install
             textBox3.Text = openFileDialog1.FileName;
         }
 
+        private void copyFile(string fileNameWithType, byte[] fileFromResourses)
+        {
+            File.WriteAllBytes(@"D:\"+ fileNameWithType, fileFromResourses);
+        }
+
         private void CopyFile(string sourcefn, string destinfn)
         {
             FileInfo fn = new FileInfo(sourcefn);
@@ -214,13 +256,17 @@ namespace install
         {
             if(checkBox2.CheckState == CheckState.Checked)
             {
-                textBox4.Visible = true;
-                label17.Visible = true;
+                textBox2.ReadOnly = true;
+                textBox4.Enabled = true;
+                textBox6.Enabled = true;
             }
             else
             {
-                textBox4.Visible = false;
-                label17.Visible = false;
+                textBox2.ReadOnly = false;
+                textBox4.Enabled = false;
+                textBox6.Enabled = false;
+                textBox4.Text = "";
+                textBox6.Text = "";
             }
         }
 
@@ -281,21 +327,18 @@ namespace install
 
         private void button18_Click(object sender, EventArgs e)
         {
-            if((radioButton4.Checked == true & textBox5.Text!="") | radioButton3.Checked == true)
+            if ((radioButton4.Checked == true & textBox5.Text!="") | radioButton3.Checked == true)
                 try
                 {
                     string last_record_s_time = "";
-                    string path_of_data_base = "";
                     string path_of_program;
-                    string password_of_data_base = "";
                     List<string> path_of_log_file = new List<string>();
-                    string server_host = "";
-                    bool done_to_install = true;//если что-то не получится, программа не будет выполнена до конца, все файлы и настройки системы не изменятся
 
 
 
                     //обновление пути установки
                     path_of_program = textBox1.Text;
+                    IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
 
                     //обновление даты последней записи в бд
                     if (checkBox1.CheckState == CheckState.Unchecked)//если она существует
@@ -327,17 +370,13 @@ namespace install
                     }
                     else
                     {
-                        last_record_s_time = "12.12.1970_12:12:12";
+                        string date = DateTime.Today.Day.ToString()+"."+ 
+                            DateTime.Today.Month.ToString()+ "." +
+                            DateTime.Today.Year.ToString()+
+                            "_0:0:1";
+                        last_record_s_time = date;
                     }
 
-                    //обновление пути к базе данных
-                    path_of_data_base = textBox2.Text;
-
-                    //если есть пароль, то запоминаю
-                    if (checkBox2.CheckState == CheckState.Checked)
-                    {
-                        password_of_data_base = textBox4.Text;
-                    }
 
                     //создание массива путей к логам
                     for (int i = 0; i < dataGridView1.RowCount; i++)
@@ -345,87 +384,82 @@ namespace install
                         path_of_log_file.Add(dataGridView1.Rows[i].Cells[0].Value.ToString());
                     }
 
-                    //получение имени сервера
-                    WorkWithWindowsCommandLine wwwcl = new WorkWithWindowsCommandLine();
-                    string command = @"/C hostname";
-                    server_host = wwwcl.Run_command(command);//в переменную server_host записываю значение только чтобы не создавать нувую переменную, здесь просто лежит ответ командной строки
-                    if (server_host == "")
+                    //копирование файлов в новую дирректорию
+                    if(installParser)
                     {
-                        string message = "Не удалось получить название сервера.";
-                        string caption = "Ошибка";
-                        DialogResult result;
-                        result = MessageBox.Show(message, caption);
-                        done_to_install = false;
+                        copyFile("ServerKeyLogsParser.exe", 
+                            Properties.Resources.ServerKeyLogsParser);
                     }
                     else
                     {
-                        //удаление лишних символов
-                        server_host = server_host.Remove((server_host.Count() - 2), 2);
+                        copyFile("Analytics.exe",
+                               Properties.Resources.Analytics);
                     }
 
 
-
-                    if (done_to_install != false)
+                    //создание файла настроек и файла запуска приложения
+                    if(radioButton4.Checked == true)
                     {
-                        //копирование файлов в новую директорию
-                        CopyFile(Application.StartupPath + "\\ServerKeyLogsParser.exe", path_of_program + "\\ServerKeyLogsParser.exe");
-
-
-                        //создание файла настроек и файла запуска приложения
-                        ReadWriteTextFile rwtf = new ReadWriteTextFile();
-                        List<string> buf = new List<string>();
-                        buf.Add(server_host + " server's_host");
-                        //buf.Add(last_record_s_time + " last_record's_time");
-                        if (password_of_data_base != "")
+                        //buf.Add(textBox5.Text + " PathAvevasParser");
+                        INI.Write("Settings", "pathAvevasParser", textBox5.Text);
+                    }
+                    for (int i = 0; i < path_of_log_file.Count(); i++)
+                    {
+                        if(i==0)
                         {
-                            buf.Add(password_of_data_base + " password");
-                        }
-                        buf.Add(path_of_data_base + " path_of_data_base");
-                        if(radioButton4.Checked == true)
-                        {
-                            buf.Add(textBox5.Text + " PathAvevasParser");
-                        }
-                        for (int i = 0; i < path_of_log_file.Count(); i++)
-                        {
-                            buf.Add(path_of_log_file.ElementAt(i) + " path_of_log_file " + last_record_s_time);
-                        }
-                        buf.Add(textBox6.Text + " table");
-                        rwtf.Write_to_file(buf, path_of_program + "\\settings.txt", 0);
-
-
-                        buf.Clear();
-                        buf.Add(@"@echo off");
-                        buf.Add("cd /d " + path_of_program);
-                        buf.Add(path_of_program + "\\ServerKeyLogsParser.exe");
-                        rwtf.Write_to_file(buf, path_of_program + "\\RunServerKeyLogsParser.bat", 0);
-
-
-                        buf.Clear();
-                        buf.Add(@"@echo off");
-                        buf.Add("cd /d " + textBox5.Text);
-                        buf.Add("lsmon aveva > "+ path_of_program + "\\output.txt");
-                        rwtf.Write_to_file(buf, path_of_program + "\\CreateAvevasLog.bat", 0);
-
-
-                        //создание задания для планировщика заданий
-                        if (checkBox1.Checked == true)
-                        {
-                            command = @"/C SCHTASKS /Create /SC MINUTE /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
+                            INI.Write("Settings", "pathOfLogFile", path_of_log_file.ElementAt(0));
+                            INI.Write("Settings", "lastDateOfLogFile", last_record_s_time);
                         }
                         else
                         {
-                            command = @"/C SCHTASKS /Create /SC HOURLY /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
+                            INI.Write("Settings", "pathOfLogFile" + i.ToString(), 
+                                path_of_log_file.ElementAt(i));
+                            INI.Write("Settings", "lastDateOfLogFile"
+                                    + i.ToString(), last_record_s_time);
                         }
-                        server_host = wwwcl.Run_command(command);//в переменную server_host записываю значение только чтобы не создавать нувую переменную, здесь просто лежит ответ командной строки
-                        if (server_host == "")
-                        {
-                            string message = "Не удалось создать задание для планировщика заданий.";
-                            string caption = "Ошибка";
-                            DialogResult result;
-                            result = MessageBox.Show(message, caption);
-                        }
-                        tabControl1.SelectTab(6);
                     }
+
+                    INI.Write("Settings", "connectionString", textBox2.Text);
+
+                    ReadWriteTextFile rwtf = new ReadWriteTextFile();
+                    List<string> buf = new List<string>();
+                    buf.Add(@"@echo off");
+                    buf.Add("cd /d " + path_of_program);
+                    buf.Add(path_of_program + "\\ServerKeyLogsParser.exe");
+                    rwtf.Write_to_file(buf, path_of_program + "\\RunServerKeyLogsParser.bat", 0);
+
+
+                    buf.Clear();
+                    buf.Add(@"@echo off");
+                    buf.Add("cd /d " + textBox5.Text);
+                    buf.Add("lsmon aveva > "+ path_of_program + "\\output.txt");
+                    rwtf.Write_to_file(buf, path_of_program + "\\CreateAvevasLog.bat", 0);
+
+
+                    //создание задания для планировщика заданий
+                    string command;
+                    if (radioButton1.Checked == true)
+                    {
+                        command = @"/C SCHTASKS /Create /SC MINUTE /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
+                    }
+                    else
+                    {
+                        command = @"/C SCHTASKS /Create /SC HOURLY /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
+                    }
+                    //в переменную check записываю значение только чтобы не создавать 
+                    //новую переменную, здесь просто лежит ответ командной строки
+                    WorkWithWindowsCommandLine wwwcl = new WorkWithWindowsCommandLine();
+                    string check = wwwcl.Run_command(command);
+                    if (check == "")
+                    {
+                        string message = "Не удалось создать задание для планировщика заданий.";
+                        string caption = "Ошибка";
+                        DialogResult result;
+                        result = MessageBox.Show(message, caption);
+                    }
+
+
+                    tabControl1.SelectTab(6);
                 }
                 catch (Exception ex)
                 {
@@ -473,6 +507,103 @@ namespace install
                 return;
             }
             textBox5.Text = folderBrowserDialog1.SelectedPath;
+        }
+
+        private void button25_Click(object sender, EventArgs e)
+        {
+            installParser = true;
+            tabControl1.SelectedIndex = 0;
+        }
+
+        private void button26_Click(object sender, EventArgs e)
+        {
+            installParser = false;
+            tabControl1.SelectedIndex = 0;
+        }
+
+        private void button27_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectedIndex = 7;
+        }
+
+        private void button8_Click_1(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
+            {
+                configProxyForLoadDataFromBDAndExecute(textBox2.Text);
+            }
+            else
+            {
+                if (checkTextBoxesWithDBParam())
+                {
+                    configProxyForLoadDataFromBDAndExecute(textBox2.Text);
+                }
+            }
+        }
+
+        private bool checkTextBoxesWithDBParam()
+        {
+            if (!textBox4.Text.Equals(""))
+            {
+                if (!textBox6.Text.Equals(""))
+                {
+                    return true;
+                }
+                else
+                {
+                    string message = "Не все поля заполнены.";
+                    string caption = "Ошибка";
+                    DialogResult result;
+                    result = MessageBox.Show(message, caption);
+                    return false;
+                }
+            }
+            else
+            {
+                string message = "Не все поля заполнены.";
+                string caption = "Ошибка";
+                DialogResult result;
+                result = MessageBox.Show(message, caption);
+                return false;
+            }
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            if (!textBox4.Text.Equals(""))
+            {
+                if (!textBox6.Text.Equals(""))
+                {
+                    textBox2.Text = "Provider=" + textBox4.Text + ";Data Source=" +
+                        textBox6.Text + ";" +
+                        "Integrated Security=SSPI;Initial Catalog=LicenseInformationSystem";
+                }
+            }
+        }
+
+        private void textBox6_TextChanged(object sender, EventArgs e)
+        {
+            if (!textBox4.Text.Equals(""))
+            {
+                if (!textBox6.Text.Equals(""))
+                {
+                    textBox2.Text = "Provider=" + textBox4.Text + ";Data Source=" +
+                        textBox6.Text + ";" +
+                        "Integrated Security=SSPI;Initial Catalog=LicenseInformationSystem";
+                }
+            }
+        }
+
+        private void button28_Click(object sender, EventArgs e)
+        {
+            //обновление пути установки
+            string path_of_program = textBox1.Text;
+            //копирование файлов в новую директорию
+            IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
+            INI.Write("Settings", "connectionString", textBox2.Text);
+            CopyFile(Application.StartupPath + "\\Analytics.exe", path_of_program + "\\Analytics.exe");
+
+            tabControl1.SelectedIndex = 6;
         }
     }
 }
