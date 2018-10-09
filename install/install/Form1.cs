@@ -216,6 +216,11 @@ namespace install
             textBox3.Text = openFileDialog1.FileName;
         }
 
+        private void copyFile(string fileNameWithType, byte[] fileFromResourses)
+        {
+            File.WriteAllBytes(@"D:\"+ fileNameWithType, fileFromResourses);
+        }
+
         private void CopyFile(string sourcefn, string destinfn)
         {
             FileInfo fn = new FileInfo(sourcefn);
@@ -365,14 +370,11 @@ namespace install
                     }
                     else
                     {
-                        string date = DateTime.Today.Day.ToString()+ 
-                            DateTime.Today.Month.ToString()+
+                        string date = DateTime.Today.Day.ToString()+"."+ 
+                            DateTime.Today.Month.ToString()+ "." +
                             DateTime.Today.Year.ToString()+
-                            "_"+
-                            DateTime.Today.Hour.ToString()+
-                            DateTime.Today.Minute.ToString()+
-                            DateTime.Today.Second.ToString();
-                        last_record_s_time = "12.12.1970_12:12:12";
+                            "_0:0:1";
+                        last_record_s_time = date;
                     }
 
                     //создание массива путей к логам
@@ -381,9 +383,17 @@ namespace install
                         path_of_log_file.Add(dataGridView1.Rows[i].Cells[0].Value.ToString());
                     }
 
-                    //копирование файлов в новую директорию
-                    CopyFile(Application.StartupPath + "\\ServerKeyLogsParser.exe", 
-                        path_of_program + "\\ServerKeyLogsParser.exe");
+                    //копирование файлов в новую дирректорию
+                    if(installParser)
+                    {
+                        copyFile("ServerKeyLogsParser.exe", 
+                            Properties.Resources.ServerKeyLogsParser);
+                    }
+                    else
+                    {
+                        copyFile("Analytics.exe",
+                               Properties.Resources.Analytics);
+                    }
 
 
                     //создание файла настроек и файла запуска приложения

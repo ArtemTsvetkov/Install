@@ -61,12 +61,32 @@ namespace install.Properties {
         }
         
         /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] Analytics {
+            get {
+                object obj = ResourceManager.GetObject("Analytics", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap background {
             get {
                 object obj = ResourceManager.GetObject("background", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        internal static byte[] ServerKeyLogsParser {
+            get {
+                object obj = ResourceManager.GetObject("ServerKeyLogsParser", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }
