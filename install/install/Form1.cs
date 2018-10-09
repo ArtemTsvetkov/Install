@@ -377,6 +377,7 @@ namespace install
                         last_record_s_time = date;
                     }
 
+
                     //создание массива путей к логам
                     for (int i = 0; i < dataGridView1.RowCount; i++)
                     {
