@@ -41,6 +41,7 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button28 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label35 = new System.Windows.Forms.Label();
@@ -117,7 +118,6 @@
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.button26 = new System.Windows.Forms.Button();
             this.button25 = new System.Windows.Forms.Button();
-            this.button28 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -287,6 +287,16 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // button28
+            // 
+            this.button28.Location = new System.Drawing.Point(174, 228);
+            this.button28.Name = "button28";
+            this.button28.Size = new System.Drawing.Size(75, 23);
+            this.button28.TabIndex = 46;
+            this.button28.Text = "Установить";
+            this.button28.UseVisualStyleBackColor = true;
+            this.button28.Click += new System.EventHandler(this.button28_Click);
             // 
             // button8
             // 
@@ -474,9 +484,9 @@
             this.label37.BackColor = System.Drawing.Color.Transparent;
             this.label37.Location = new System.Drawing.Point(42, 76);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(236, 13);
+            this.label37.Size = new System.Drawing.Size(312, 13);
             this.label37.TabIndex = 22;
-            this.label37.Text = "время, с которы начнется анализ этих логов";
+            this.label37.Text = "анализ, начиная с более ранней даты-введите время и дату";
             // 
             // label36
             // 
@@ -484,9 +494,9 @@
             this.label36.BackColor = System.Drawing.Color.Transparent;
             this.label36.Location = new System.Drawing.Point(42, 60);
             this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(339, 13);
+            this.label36.Size = new System.Drawing.Size(335, 13);
             this.label36.TabIndex = 21;
-            this.label36.Text = "обработанные логи с более старымы данными - выберите дату и";
+            this.label36.Text = "log-файлов, начиная с текущей даты. Если Вы хотите выполнить";
             // 
             // checkBox1
             // 
@@ -516,9 +526,9 @@
             this.label9.BackColor = System.Drawing.Color.Transparent;
             this.label9.Location = new System.Drawing.Point(42, 45);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(301, 13);
+            this.label9.Size = new System.Drawing.Size(356, 13);
             this.label9.TabIndex = 17;
-            this.label9.Text = "Если в БД есть данные, а на данной машине есть еще не";
+            this.label9.Text = "При выборе пункта \"Новая установка\" программа выполнит анализ";
             // 
             // label10
             // 
@@ -1135,16 +1145,6 @@
             this.button25.Text = "Установка программы сбора данных";
             this.button25.UseVisualStyleBackColor = true;
             this.button25.Click += new System.EventHandler(this.button25_Click);
-            // 
-            // button28
-            // 
-            this.button28.Location = new System.Drawing.Point(174, 228);
-            this.button28.Name = "button28";
-            this.button28.Size = new System.Drawing.Size(75, 23);
-            this.button28.TabIndex = 46;
-            this.button28.Text = "Установить";
-            this.button28.UseVisualStyleBackColor = true;
-            this.button28.Click += new System.EventHandler(this.button28_Click);
             // 
             // Form1
             // 
