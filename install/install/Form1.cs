@@ -365,6 +365,13 @@ namespace install
                     }
                     else
                     {
+                        string date = DateTime.Today.Day.ToString()+ 
+                            DateTime.Today.Month.ToString()+
+                            DateTime.Today.Year.ToString()+
+                            "_"+
+                            DateTime.Today.Hour.ToString()+
+                            DateTime.Today.Minute.ToString()+
+                            DateTime.Today.Second.ToString();
                         last_record_s_time = "12.12.1970_12:12:12";
                     }
 
@@ -375,7 +382,8 @@ namespace install
                     }
 
                     //копирование файлов в новую директорию
-                    CopyFile(Application.StartupPath + "\\ServerKeyLogsParser.exe", path_of_program + "\\ServerKeyLogsParser.exe");
+                    CopyFile(Application.StartupPath + "\\ServerKeyLogsParser.exe", 
+                        path_of_program + "\\ServerKeyLogsParser.exe");
 
 
                     //создание файла настроек и файла запуска приложения
@@ -416,7 +424,7 @@ namespace install
                     buf.Add("lsmon aveva > "+ path_of_program + "\\output.txt");
                     rwtf.Write_to_file(buf, path_of_program + "\\CreateAvevasLog.bat", 0);
 
-                    /*ДЛЯ ТЕСТОВ ОТКЛЮЧИЛ
+
                     //создание задания для планировщика заданий
                     string command;
                     if (radioButton1.Checked == true)
@@ -437,7 +445,7 @@ namespace install
                         string caption = "Ошибка";
                         DialogResult result;
                         result = MessageBox.Show(message, caption);
-                    }*/
+                    }
 
 
                     tabControl1.SelectTab(6);
