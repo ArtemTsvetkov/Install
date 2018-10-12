@@ -18,7 +18,7 @@ namespace install.WorkWithDataBase.MsSqlServer
         public void execute()
         {
             string connStr = string.Format(config.getConnectionString());
-            resultStorage = runQuery(connStr);
+            resultStorage = runQuery(connStr, config.getQuery());
         }
 
         //Тестирует возможность подключения к БД, в этом классе(он не прокси) всегда есть
@@ -33,10 +33,81 @@ namespace install.WorkWithDataBase.MsSqlServer
             this.config = config;
         }
 
-        private DataSet runQuery(string connection_string)
+        //функция поиска названия таблицы базы данных
+        private string selectTableNameFromQuery(string query)
         {
-            //Подключение к БД используется только для проверки параметров подключения
-            return null;
+            string[] buf_of_substrings = query.Split(new char[] { ' ' }, StringSplitOptions.
+                RemoveEmptyEntries);
+            if (buf_of_substrings[0].Equals("SELECT", StringComparison.CurrentCultureIgnoreCase) ==
+                true)
+            {
+                return buf_of_substrings[3];
+            }
+            if (buf_of_substrings[0].Equals("INSERT", StringComparison.CurrentCultureIgnoreCase) ==
+                true)
+            {
+                return buf_of_substrings[2];
+            }
+            if (buf_of_substrings[0].Equals("UPDATE", StringComparison.CurrentCultureIgnoreCase) ==
+                true)
+            {
+                return buf_of_substrings[1];
+            }
+            if (buf_of_substrings[0].Equals("DELETE", StringComparison.CurrentCultureIgnoreCase) ==
+                true)
+            {
+                return buf_of_substrings[2];
+            }
+            return "null";
+        }
+
+        private DataSet runQuery(string connection_string, List<string> query)
+        {
+            DataSet dataSet = new DataSet();
+            OleDbConnection conn;
+            conn = null;
+            try
+            {
+                try
+                {
+                    conn = new OleDbConnection(connection_string);
+                    conn.Open();
+                }
+                catch (Exception ex)
+                {
+                    throw new NoDataBaseConnection("There is no database connection");
+                }
+
+
+                int i = 0;
+                try
+                {
+                    for (i = 0; i < query.Count; i++)
+                    {
+                        OleDbDataAdapter adapter = new OleDbDataAdapter(query.ElementAt(i), conn);
+                        adapter.Fill(dataSet, selectTableNameFromQuery(query.ElementAt(i)));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex.HResult == -2147217865)
+                    {
+                        throw new NoTableFound();
+                    }
+                    else
+                    {
+                        throw new DatabaseQueryError("Database query error. Query:" +
+                            query.ElementAt(i));
+                    }
+                }
+
+
+                return dataSet;
+            }
+            finally
+            {
+                if (conn != null) conn.Close();
+            }
         }
 
         public DataSet getResult()

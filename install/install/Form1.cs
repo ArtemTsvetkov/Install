@@ -2,8 +2,14 @@
 using install.ExceptionHandler.Interfaces;
 using install.ExceptionHandler.View.Information.PopupWindow;
 using install.Exceptions;
+using install.Hash;
 using install.IniComponent;
+using install.Interfaces;
 using install.Interfaces.Data;
+using install.Interfaces.DataBase;
+using install.Interfaces.QueryConfigurator;
+using install.QueryConfigurator;
+using install.Security;
 using install.WorkWithDataBase.MsSqlServer;
 using System;
 using System.Collections.Generic;
@@ -21,6 +27,8 @@ namespace install
     public partial class Form1 : Form
     {
         private bool installParser = true;
+        private DataBaseControllerInterface msSqlServerController;
+        
 
         public Form1()
         {
@@ -30,6 +38,10 @@ namespace install
             //
             ConcreteExceptionHandlerInitializer.initThisExceptionHandler(
                 ExceptionHandler.Concrete.ExceptionHandler.getInstance());
+            //
+            //SQL
+            //
+            msSqlServerController = new MsSqlServerController();
             //настройка переключателя
             tabControl1.Appearance = TabAppearance.FlatButtons;
             tabControl1.ItemSize = new Size(0, 1);
@@ -48,31 +60,6 @@ namespace install
             coefficient0.Width = 363;
             coefficient0.HeaderText = "Пути к логам";
             dataGridView1.Columns.Add(coefficient0);
-        }
-
-        private bool configProxyForLoadDataFromBDAndExecute(string connectionString)
-        {
-            try
-            {
-                DataWorker<MsSQLServerStateFields, DataSet> accessProxy = new MsSQLServerProxy();
-                MsSQLServerStateFields configProxy =
-                    new MsSQLServerStateFields(connectionString);
-                accessProxy.setConfig(configProxy);
-                accessProxy.connect();
-                ExceptionViewInterface<InformationPopupWindowConfig> view = 
-                    new InformationPopupWindow();
-                InformationPopupWindowConfig config = new InformationPopupWindowConfig(
-                    "Соединение установлено");
-                view.setConfig(config);
-                view.show();
-                return true;
-            }
-            catch(Exception ex)
-            {
-                ExceptionHandler.Concrete.ExceptionHandler.getInstance().processing(
-                    new NoDataBaseConnection());
-                return false;
-            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -104,16 +91,6 @@ namespace install
                 if (no_errors == true)
                 {
                     tabControl1.SelectTab(1);
-                    if(!installParser)
-                    {
-                        button28.Visible = true;
-                        button6.Visible = false;
-                    }
-                    else
-                    {
-                        button28.Visible = false;
-                        button6.Visible = true;
-                    }
                 }
                 else
                 {
@@ -140,23 +117,7 @@ namespace install
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
-            {
-                if (configProxyForLoadDataFromBDAndExecute(textBox2.Text))
-                {
-                    tabControl1.SelectedIndex = 2;
-                }
-            }
-            else
-            {
-                if (checkTextBoxesWithDBParam())
-                {
-                    if (configProxyForLoadDataFromBDAndExecute(textBox2.Text))
-                    {
-                        tabControl1.SelectedIndex = 2;
-                    }
-                }
-            }
+            
         }
 
         private void button11_Click(object sender, EventArgs e)
@@ -216,9 +177,10 @@ namespace install
             textBox3.Text = openFileDialog1.FileName;
         }
 
-        private void copyFile(string fileNameWithType, byte[] fileFromResourses)
+        private void copyFile(string fileNameWithType, byte[] fileFromResourses, 
+            string newFilesPath)
         {
-            File.WriteAllBytes(@"D:\"+ fileNameWithType, fileFromResourses);
+            File.WriteAllBytes(@""+ newFilesPath+"\\" + fileNameWithType, fileFromResourses);
         }
 
         private void CopyFile(string sourcefn, string destinfn)
@@ -373,7 +335,7 @@ namespace install
                         string date = DateTime.Today.Day.ToString()+"."+ 
                             DateTime.Today.Month.ToString()+ "." +
                             DateTime.Today.Year.ToString()+
-                            "_0:0:1";
+                            "_1:1:1";
                         last_record_s_time = date;
                     }
 
@@ -385,16 +347,8 @@ namespace install
                     }
 
                     //копирование файлов в новую дирректорию
-                    if(installParser)
-                    {
-                        copyFile("ServerKeyLogsParser.exe", 
-                            Properties.Resources.ServerKeyLogsParser);
-                    }
-                    else
-                    {
-                        copyFile("Analytics.exe",
-                               Properties.Resources.Analytics);
-                    }
+                    copyFile("ServerKeyLogsParser.exe", 
+                        Properties.Resources.ServerKeyLogsParser, path_of_program);
 
 
                     //создание файла настроек и файла запуска приложения
@@ -530,13 +484,13 @@ namespace install
         {
             if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
             {
-                configProxyForLoadDataFromBDAndExecute(textBox2.Text);
+                msSqlServerController.configAndCheckConnect(textBox2.Text);
             }
             else
             {
                 if (checkTextBoxesWithDBParam())
                 {
-                    configProxyForLoadDataFromBDAndExecute(textBox2.Text);
+                    msSqlServerController.configAndCheckConnect(textBox2.Text);
                 }
             }
         }
@@ -594,16 +548,123 @@ namespace install
             }
         }
 
-        private void button28_Click(object sender, EventArgs e)
+        private void button31_Click(object sender, EventArgs e)
         {
-            //обновление пути установки
-            string path_of_program = textBox1.Text;
-            //копирование файлов в новую директорию
-            IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
-            INI.Write("Settings", "connectionString", textBox2.Text);
-            CopyFile(Application.StartupPath + "\\Analytics.exe", path_of_program + "\\Analytics.exe");
+            tabControl1.SelectTab(1);
+        }
 
-            tabControl1.SelectedIndex = 6;
+        private void button32_Click(object sender, EventArgs e)
+        {
+            if (!textBox8.Text.Equals("") & !textBox7.Text.Equals(""))
+            {
+                if (textBox8.Text.Equals(textBox9.Text))
+                {
+                    //обновление пути установки
+                    string path_of_program = textBox1.Text;
+                    //копирование файлов в новую директорию
+                    IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
+                    INI.Write("Settings", "connectionString", textBox2.Text);
+                    copyFile("Analytics.exe", Properties.Resources.Analytics, path_of_program);
+                    //Создание структуры таблиц бд
+                    
+
+                    tabControl1.SelectedIndex = 6;
+                }
+                else
+                {
+                    string message = "Пароли не совпадают";
+                    string caption = "Ошибка";
+                    DialogResult result;
+                    result = MessageBox.Show(message, caption);
+                }
+            }
+            else
+            {
+                string message = "Не все поля заполнены.";
+                string caption = "Ошибка";
+                DialogResult result;
+                result = MessageBox.Show(message, caption);
+            }
+        }
+
+        private void button30_Click(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void button29_Click(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
+            {
+                if (msSqlServerController.configAndCheckConnect(textBox2.Text))
+                {
+                    //Проверка (случай установки анализатора), доступна ли таблица
+                    //UST. Если доступна, то ранее уже создавалась структура БД и минимум один 
+                    //администратор(копия этой программы установлена на другом компьютере и уже 
+                    //все сделала)
+                    //Если нет, то нужно создать структуру таблиц и администратора
+                    if (msSqlServerController.configAndExecute(textBox2.Text, "SELECT 1 FROM UST"))
+                    {
+                        //обновление пути установки
+                        string path_of_program = textBox1.Text;
+                        //копирование файлов в новую директорию
+                        IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
+                        INI.Write("Settings", "connectionString", textBox2.Text);
+                        copyFile("Analytics.exe", Properties.Resources.Analytics, path_of_program);
+
+                        tabControl1.SelectedIndex = 6;
+                    }
+                    else
+                    {
+                        if (installParser)
+                        {
+                            tabControl1.SelectedIndex = 2;
+                        }
+                        else
+                        {
+                            tabControl1.SelectedIndex = 8;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (checkTextBoxesWithDBParam())
+                {
+                    if (msSqlServerController.configAndCheckConnect(textBox2.Text))
+                    {
+                        //Проверка (случай установки анализатора), доступна ли таблица
+                        //UST. Если доступна, то ранее уже создавалась структура БД и минимум один 
+                        //администратор(копия этой программы установлена на другом компьютере и уже 
+                        //все сделала)
+                        //Если нет, то нужно создать структуру таблиц и администратора
+                        if (msSqlServerController.configAndExecute(
+                            textBox2.Text, "SELECT 1 FROM UST"))
+                        {
+                            //обновление пути установки
+                            string path_of_program = textBox1.Text;
+                            //копирование файлов в новую директорию
+                            IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
+                            INI.Write("Settings", "connectionString", textBox2.Text);
+                            copyFile("Analytics.exe", Properties.Resources.Analytics, 
+                                path_of_program);
+
+                            tabControl1.SelectedIndex = 6;
+                        }
+                        else
+                        {
+                            if (installParser)
+                            {
+                                tabControl1.SelectedIndex = 2;
+                            }
+                            else
+                            {
+                                tabControl1.SelectedIndex = 8;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
