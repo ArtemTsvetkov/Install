@@ -1,10 +1,12 @@
-﻿using install.ExceptionHandler.Concrete;
+﻿using install.Basic;
+using install.ExceptionHandler.Concrete;
 using install.ExceptionHandler.Interfaces;
 using install.ExceptionHandler.View.Information.PopupWindow;
 using install.Exceptions;
 using install.Hash;
 using install.IniComponent;
 using install.Interfaces;
+using install.Interfaces.Basic;
 using install.Interfaces.Data;
 using install.Interfaces.DataBase;
 using install.Interfaces.QueryConfigurator;
@@ -26,9 +28,7 @@ namespace install
 {
     public partial class Form1 : Form
     {
-        private bool installParser = true;
-        private DataBaseControllerInterface msSqlServerController;
-        
+        private ControllerInterface controller;
 
         public Form1()
         {
@@ -39,9 +39,11 @@ namespace install
             ConcreteExceptionHandlerInitializer.initThisExceptionHandler(
                 ExceptionHandler.Concrete.ExceptionHandler.getInstance());
             //
-            //SQL
+            //MVC
             //
-            msSqlServerController = new MsSqlServerController();
+            ModelInterface model = new Model();
+            Basic.View view = new Basic.View(this, model);
+            controller = new Controller(model);
             //настройка переключателя
             tabControl1.Appearance = TabAppearance.FlatButtons;
             tabControl1.ItemSize = new Size(0, 1);
@@ -54,6 +56,7 @@ namespace install
             button24.Visible = false;
             radioButton3.Checked = true;
             checkBox2.Checked = true;
+            button6.Enabled = false;
             //добавление колонок в таблицу
             DataGridViewTextBoxColumn coefficient0;
             coefficient0 = new DataGridViewTextBoxColumn();
@@ -70,6 +73,7 @@ namespace install
                 return;
             }
             textBox1.Text = folderBrowserDialog1.SelectedPath;
+            controller.setProgramPath(folderBrowserDialog1.SelectedPath);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -94,20 +98,23 @@ namespace install
                 }
                 else
                 {
-                    string message = "В пути должны отсутствовать пробелы, спецсимволы, знаки табуляции и русские символы.";
-                    string caption = "Ошибка";
-                    DialogResult result;
-                    result = MessageBox.Show(message, caption);
+                    showErrorMessage("В пути должны отсутствовать пробелы, спецсимволы,"+
+                        " знаки табуляции и русские символы.");
                 }
 
             }
             else
             {
-                string message = "Не все поля заполнены.";
-                string caption = "Ошибка";
-                DialogResult result;
-                result = MessageBox.Show(message, caption);
+                showErrorMessage("Не все поля заполнены.");
             }
+        }
+
+        private void showErrorMessage(string error)
+        {
+            string message = error;
+            string caption = "Ошибка";
+            DialogResult result;
+            result = MessageBox.Show(message, caption);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -152,6 +159,12 @@ namespace install
 
         private void button10_Click(object sender, EventArgs e)
         {
+            if (checkBox1.CheckState == CheckState.Unchecked)//если она существует
+            {
+                controller.setLastDate(dateTimePicker2.Text);
+            }
+
+
             tabControl1.SelectTab(3);
         }
 
@@ -199,10 +212,8 @@ namespace install
             }
             else
             {
-                string message = "Нельзя добавить пустой путь. Для добавления нажмите \"Обзор\", выберите нужный файл, затем нажмите \"Добавить\"";
-                string caption = "Ошибка добавления";
-                DialogResult result;
-                result = MessageBox.Show(message, caption);
+                showErrorMessage("Нельзя добавить пустой путь. Для добавления "+
+                    "нажмите \"Обзор\", выберите нужный файл, затем нажмите \"Добавить\"");
             }
         }
 
@@ -261,11 +272,29 @@ namespace install
 
         private void button19_Click(object sender, EventArgs e)
         {
+            if (radioButton1.Checked == true)
+            {
+                controller.setTimeModidicatorType(true);
+            }
+            else
+            {
+                controller.setTimeModidicatorType(false);
+            }
+            controller.setTimeModificator(int.Parse(numericUpDown1.Value.ToString()));
+
             tabControl1.SelectTab(5);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            List<string> logs = new List<string>();
+            //создание массива путей к логам
+            for (int i = 0; i < dataGridView1.RowCount; i++)
+            {
+                logs.Add(dataGridView1.Rows[i].Cells[0].Value.ToString());
+            }
+            controller.setLogsPath(logs);
+            
             tabControl1.SelectTab(4);
         }
 
@@ -289,7 +318,15 @@ namespace install
 
         private void button18_Click(object sender, EventArgs e)
         {
-            if ((radioButton4.Checked == true & textBox5.Text!="") | radioButton3.Checked == true)
+            if ((radioButton4.Checked == true & textBox5.Text != "") | radioButton3.Checked == true)
+            {
+                controller.install();
+            }
+            else
+            {
+                showErrorMessage("Пожалуйста, введите путь для утилиты lsmon.");
+            }
+            /*if ((radioButton4.Checked == true & textBox5.Text!="") | radioButton3.Checked == true)
                 try
                 {
                     string last_record_s_time = "";
@@ -426,7 +463,7 @@ namespace install
                     buf.Add("Exception: " + ex.Message);
 
                     rwtf.Write_to_file(buf, Directory.GetCurrentDirectory() + "\\Errors.txt", 0);
-                }
+                }*/
         }
 
         private void button23_Click(object sender, EventArgs e)
@@ -461,17 +498,18 @@ namespace install
                 return;
             }
             textBox5.Text = folderBrowserDialog1.SelectedPath;
+            controller.setAvevasPath(folderBrowserDialog1.SelectedPath);
         }
 
         private void button25_Click(object sender, EventArgs e)
         {
-            installParser = true;
+            controller.setIntalledProgramType(true);
             tabControl1.SelectedIndex = 0;
         }
 
         private void button26_Click(object sender, EventArgs e)
         {
-            installParser = false;
+            controller.setIntalledProgramType(false);
             tabControl1.SelectedIndex = 0;
         }
 
@@ -484,13 +522,13 @@ namespace install
         {
             if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
             {
-                msSqlServerController.configAndCheckConnect(textBox2.Text);
+                controller.setConnectionString(textBox2.Text);
             }
             else
             {
                 if (checkTextBoxesWithDBParam())
                 {
-                    msSqlServerController.configAndCheckConnect(textBox2.Text);
+                    controller.setConnectionString(textBox2.Text);
                 }
             }
         }
@@ -505,19 +543,13 @@ namespace install
                 }
                 else
                 {
-                    string message = "Не все поля заполнены.";
-                    string caption = "Ошибка";
-                    DialogResult result;
-                    result = MessageBox.Show(message, caption);
+                    showErrorMessage("Не все поля заполнены.");
                     return false;
                 }
             }
             else
             {
-                string message = "Не все поля заполнены.";
-                string caption = "Ошибка";
-                DialogResult result;
-                result = MessageBox.Show(message, caption);
+                showErrorMessage("Не все поля заполнены.");
                 return false;
             }
         }
@@ -559,15 +591,10 @@ namespace install
             {
                 if (textBox8.Text.Equals(textBox9.Text))
                 {
-                    //обновление пути установки
-                    string path_of_program = textBox1.Text;
-                    //копирование файлов в новую директорию
-                    IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
-                    INI.Write("Settings", "connectionString", textBox2.Text);
-                    copyFile("Analytics.exe", Properties.Resources.Analytics, path_of_program);
-                    //Создание структуры таблиц бд
-                    
-
+                    SecurityUserInterface admin = new SecurityUser(textBox7.Text, textBox8.Text);
+                    admin.setAdmin(true);
+                    controller.initDataBase(admin);
+                    controller.install();
                     tabControl1.SelectedIndex = 6;
                 }
                 else
@@ -590,81 +617,6 @@ namespace install
         private void button30_Click(object sender, EventArgs e)
         {
             Environment.Exit(0);
-        }
-
-        private void button29_Click(object sender, EventArgs e)
-        {
-            if (checkBox2.Checked == false & !textBox2.Text.Equals(""))
-            {
-                if (msSqlServerController.configAndCheckConnect(textBox2.Text))
-                {
-                    //Проверка (случай установки анализатора), доступна ли таблица
-                    //UST. Если доступна, то ранее уже создавалась структура БД и минимум один 
-                    //администратор(копия этой программы установлена на другом компьютере и уже 
-                    //все сделала)
-                    //Если нет, то нужно создать структуру таблиц и администратора
-                    if (msSqlServerController.configAndExecute(textBox2.Text, "SELECT 1 FROM UST"))
-                    {
-                        //обновление пути установки
-                        string path_of_program = textBox1.Text;
-                        //копирование файлов в новую директорию
-                        IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
-                        INI.Write("Settings", "connectionString", textBox2.Text);
-                        copyFile("Analytics.exe", Properties.Resources.Analytics, path_of_program);
-
-                        tabControl1.SelectedIndex = 6;
-                    }
-                    else
-                    {
-                        if (installParser)
-                        {
-                            tabControl1.SelectedIndex = 2;
-                        }
-                        else
-                        {
-                            tabControl1.SelectedIndex = 8;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (checkTextBoxesWithDBParam())
-                {
-                    if (msSqlServerController.configAndCheckConnect(textBox2.Text))
-                    {
-                        //Проверка (случай установки анализатора), доступна ли таблица
-                        //UST. Если доступна, то ранее уже создавалась структура БД и минимум один 
-                        //администратор(копия этой программы установлена на другом компьютере и уже 
-                        //все сделала)
-                        //Если нет, то нужно создать структуру таблиц и администратора
-                        if (msSqlServerController.configAndExecute(
-                            textBox2.Text, "SELECT 1 FROM UST"))
-                        {
-                            //обновление пути установки
-                            string path_of_program = textBox1.Text;
-                            //копирование файлов в новую директорию
-                            IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
-                            INI.Write("Settings", "connectionString", textBox2.Text);
-                            copyFile("Analytics.exe", Properties.Resources.Analytics, 
-                                path_of_program);
-
-                            tabControl1.SelectedIndex = 6;
-                        }
-                        else
-                        {
-                            if (installParser)
-                            {
-                                tabControl1.SelectedIndex = 2;
-                            }
-                            else
-                            {
-                                tabControl1.SelectedIndex = 8;
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }

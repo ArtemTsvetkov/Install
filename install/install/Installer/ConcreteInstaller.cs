@@ -62,22 +62,23 @@ namespace install.Installer
             copyFile("Analytics.exe", Properties.Resources.Analytics, programsPath);
         }
 
-        public void installParser(string programsPath, string connectionString, bool lastDateExist)
+        public void installParser(string programsPath, string connectionString, 
+            List<string> pathOfLogFile, int timeModificator, 
+            bool hourlyTimeModificator, string lastDate, string pathAvevaParser)
         {
             try
             {
                 string last_record_s_time = "";
-                List<string> path_of_log_file = new List<string>();
 
                 IniFiles INI = new IniFiles(programsPath + "\\config.ini");
 
                 //обновление даты последней записи в бд
-                if (lastDateExist)//если она существует
+                if (lastDate!=null)//если она существует
                 {
-
-                    string date_time = dateTimePicker2.Text;
-                    string[] words = date_time.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    string[] date = words[0].Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] words = lastDate.Split(new char[] { ' ' }, 
+                        StringSplitOptions.RemoveEmptyEntries);
+                    string[] date = words[0].Split(new char[] { '.' },
+                        StringSplitOptions.RemoveEmptyEntries);
                     //удаление лишних нулей
                     for (int i = 0; i < date.Count(); i++)
                     {
@@ -108,41 +109,34 @@ namespace install.Installer
                     last_record_s_time = date;
                 }
 
-
-                //создание массива путей к логам
-                for (int i = 0; i < dataGridView1.RowCount; i++)
-                {
-                    path_of_log_file.Add(dataGridView1.Rows[i].Cells[0].Value.ToString());
-                }
-
                 //копирование файлов в новую дирректорию
                 copyFile("ServerKeyLogsParser.exe",
                     Properties.Resources.ServerKeyLogsParser, programsPath);
 
 
                 //создание файла настроек и файла запуска приложения
-                if (radioButton4.Checked == true)
+                if (pathAvevaParser != null)
                 {
                     //buf.Add(textBox5.Text + " PathAvevasParser");
-                    INI.Write("Settings", "pathAvevasParser", textBox5.Text);
+                    INI.Write("Settings", "pathAvevasParser", pathAvevaParser);
                 }
-                for (int i = 0; i < path_of_log_file.Count(); i++)
+                for (int i = 0; i < pathOfLogFile.Count(); i++)
                 {
                     if (i == 0)
                     {
-                        INI.Write("Settings", "pathOfLogFile", path_of_log_file.ElementAt(0));
+                        INI.Write("Settings", "pathOfLogFile", pathOfLogFile.ElementAt(0));
                         INI.Write("Settings", "lastDateOfLogFile", last_record_s_time);
                     }
                     else
                     {
                         INI.Write("Settings", "pathOfLogFile" + i.ToString(),
-                            path_of_log_file.ElementAt(i));
+                            pathOfLogFile.ElementAt(i));
                         INI.Write("Settings", "lastDateOfLogFile"
                                 + i.ToString(), last_record_s_time);
                     }
                 }
 
-                INI.Write("Settings", "connectionString", textBox2.Text);
+                INI.Write("Settings", "connectionString", connectionString);
 
                 ReadWriteTextFile rwtf = new ReadWriteTextFile();
                 List<string> buf = new List<string>();
@@ -154,22 +148,22 @@ namespace install.Installer
 
                 buf.Clear();
                 buf.Add(@"@echo off");
-                buf.Add("cd /d " + textBox5.Text);
+                buf.Add("cd /d " + pathAvevaParser);
                 buf.Add("lsmon aveva > " + programsPath + "\\output.txt");
                 rwtf.Write_to_file(buf, programsPath + "\\CreateAvevasLog.bat", 0);
 
 
                 //создание задания для планировщика заданий
                 string command;
-                if (radioButton1.Checked == true)
+                if (!hourlyTimeModificator)
                 {
-                    command = @"/C SCHTASKS /Create /SC MINUTE /MO " + numericUpDown1.Value + 
+                    command = @"/C SCHTASKS /Create /SC MINUTE /MO " + timeModificator + 
                         " /TR " + programsPath + 
                         "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
                 }
                 else
                 {
-                    command = @"/C SCHTASKS /Create /SC HOURLY /MO " + numericUpDown1.Value + 
+                    command = @"/C SCHTASKS /Create /SC HOURLY /MO " + timeModificator + 
                         " /TR " + programsPath + 
                         "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
                 }

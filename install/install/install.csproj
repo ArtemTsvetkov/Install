@@ -61,6 +61,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Basic\Config.cs" />
+    <Compile Include="Basic\Controller.cs" />
+    <Compile Include="Basic\Model.cs" />
+    <Compile Include="Basic\Result.cs" />
+    <Compile Include="Basic\View.cs" />
     <Compile Include="ExceptionHandler\Concrete\ConcreteExceptionHandlerInitializer.cs" />
     <Compile Include="ExceptionHandler\Concrete\ExceptionHandler.cs" />
     <Compile Include="ExceptionHandler\Exceptions\AlreadyExistException.cs" />
@@ -86,8 +91,15 @@
     <Compile Include="Hash\HashWorker.cs" />
     <Compile Include="IniComponent\IniFiles.cs" />
     <Compile Include="Installer\ConcreteInstaller.cs" />
+    <Compile Include="Installer\ConcreteIntallBuilder.cs" />
+    <Compile Include="Installer\Product.cs" />
+    <Compile Include="Interfaces\Basic\ControllerInterface.cs" />
+    <Compile Include="Interfaces\Basic\ModelInterface.cs" />
+    <Compile Include="Interfaces\Basic\Observer.cs" />
+    <Compile Include="Interfaces\Basic\ResultInterface.cs" />
     <Compile Include="Interfaces\DataBase\DataBaseControllerInterface.cs" />
     <Compile Include="Interfaces\Data\DataWorker.cs" />
+    <Compile Include="Interfaces\Installer\InstallBuilder.cs" />
     <Compile Include="Interfaces\Installer\InstallerInterface.cs" />
     <Compile Include="Interfaces\QueryConfigurator\QueryConfiguratorInterface.cs" />
     <Compile Include="Interfaces\Security\HashWorkerInterface.cs" />
@@ -95,13 +107,13 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryConfigurator\MsSqlQueryConfigurator.cs" />
-    <Compile Include="ReadWriteTextFile.cs" />
+    <Compile Include="WorkWithFiles\ReadWriteTextFile.cs" />
     <Compile Include="Security\SecurityUser.cs" />
     <Compile Include="WorkWithDataBase\MsSqlServer\MsSqlServerController.cs" />
     <Compile Include="WorkWithDataBase\MsSqlServer\MsSQLServerDataWorker.cs" />
     <Compile Include="WorkWithDataBase\MsSqlServer\MsSQLServerProxy.cs" />
     <Compile Include="WorkWithDataBase\MsSqlServer\MsSQLServerStateFields.cs" />
-    <Compile Include="WorkWithWindowsCommandLine.cs" />
+    <Compile Include="WindowsCommandLine\WorkWithWindowsCommandLine.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

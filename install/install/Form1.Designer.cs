@@ -41,8 +41,6 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.button29 = new System.Windows.Forms.Button();
-            this.button28 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label35 = new System.Windows.Forms.Label();
@@ -279,8 +277,6 @@
             // 
             this.tabPage2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("tabPage2.BackgroundImage")));
             this.tabPage2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.tabPage2.Controls.Add(this.button29);
-            this.tabPage2.Controls.Add(this.button28);
             this.tabPage2.Controls.Add(this.button8);
             this.tabPage2.Controls.Add(this.textBox6);
             this.tabPage2.Controls.Add(this.label35);
@@ -304,25 +300,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // button29
-            // 
-            this.button29.Location = new System.Drawing.Point(192, 199);
-            this.button29.Name = "button29";
-            this.button29.Size = new System.Drawing.Size(75, 23);
-            this.button29.TabIndex = 55;
-            this.button29.Text = "Установить";
-            this.button29.UseVisualStyleBackColor = true;
-            this.button29.Click += new System.EventHandler(this.button29_Click);
-            // 
-            // button28
-            // 
-            this.button28.Location = new System.Drawing.Point(345, 110);
-            this.button28.Name = "button28";
-            this.button28.Size = new System.Drawing.Size(75, 23);
-            this.button28.TabIndex = 46;
-            this.button28.Text = "Установить";
-            this.button28.UseVisualStyleBackColor = true;
             // 
             // button8
             // 
@@ -1432,7 +1409,6 @@
         private System.Windows.Forms.Label label37;
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.Button button27;
-        private System.Windows.Forms.Button button28;
         private System.Windows.Forms.TabPage tabPage9;
         private System.Windows.Forms.TextBox textBox9;
         private System.Windows.Forms.TextBox textBox8;
@@ -1446,7 +1422,6 @@
         private System.Windows.Forms.Button button31;
         private System.Windows.Forms.Label label42;
         private System.Windows.Forms.Button button32;
-        private System.Windows.Forms.Button button29;
     }
 }
 
