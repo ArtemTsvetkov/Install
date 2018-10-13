@@ -1,4 +1,7 @@
 ﻿using install.Basic;
+using install.Basic.ModelsParts;
+using install.Basic.ModelsParts.Types.ProgramTypes;
+using install.Basic.ModelsParts.Types.TimeTypes;
 using install.ExceptionHandler.Concrete;
 using install.ExceptionHandler.Interfaces;
 using install.ExceptionHandler.View.Information.PopupWindow;
@@ -274,11 +277,11 @@ namespace install
         {
             if (radioButton1.Checked == true)
             {
-                controller.setTimeModidicatorType(true);
+                controller.setTimeModidicatorType(new MinuteType());
             }
             else
             {
-                controller.setTimeModidicatorType(false);
+                controller.setTimeModidicatorType(new HourType());
             }
             controller.setTimeModificator(int.Parse(numericUpDown1.Value.ToString()));
 
@@ -503,13 +506,13 @@ namespace install
 
         private void button25_Click(object sender, EventArgs e)
         {
-            controller.setIntalledProgramType(true);
+            controller.setInstalledProgramType(new ParserType());
             tabControl1.SelectedIndex = 0;
         }
 
         private void button26_Click(object sender, EventArgs e)
         {
-            controller.setIntalledProgramType(false);
+            controller.setInstalledProgramType(new AnalitycsType());
             tabControl1.SelectedIndex = 0;
         }
 

@@ -63,7 +63,15 @@
   <ItemGroup>
     <Compile Include="Basic\Config.cs" />
     <Compile Include="Basic\Controller.cs" />
-    <Compile Include="Basic\Model.cs" />
+    <Compile Include="Basic\ModelsParts\Chain\BaseConfigReader.cs" />
+    <Compile Include="Basic\ModelsParts\Chain\ConfigReader.cs" />
+    <Compile Include="Basic\ModelsParts\Model.cs" />
+    <Compile Include="Basic\ModelsParts\Types\ProgramTypes\AnalitycsType.cs" />
+    <Compile Include="Basic\ModelsParts\Types\ProgramTypes\ParserType.cs" />
+    <Compile Include="Basic\ModelsParts\Types\ProgramTypes\ProgramType.cs" />
+    <Compile Include="Basic\ModelsParts\Types\TimeTypes\HourType.cs" />
+    <Compile Include="Basic\ModelsParts\Types\TimeTypes\MinuteType.cs" />
+    <Compile Include="Basic\ModelsParts\Types\TimeTypes\TimeType.cs" />
     <Compile Include="Basic\Result.cs" />
     <Compile Include="Basic\View.cs" />
     <Compile Include="ExceptionHandler\Concrete\ConcreteExceptionHandlerInitializer.cs" />
@@ -78,6 +86,7 @@
     <Compile Include="ExceptionHandler\View\Information\PopupWindow\InformationPopupWindow.cs" />
     <Compile Include="ExceptionHandler\View\Information\PopupWindow\InformationPopupWindowConfig.cs" />
     <Compile Include="Exceptions\DatabaseQueryError.cs" />
+    <Compile Include="Exceptions\FinishChain.cs" />
     <Compile Include="Exceptions\NoConfigurationSpecified.cs" />
     <Compile Include="Exceptions\NoDataBaseConnection.cs" />
     <Compile Include="Exceptions\NoTableFound.cs" />
@@ -167,6 +176,7 @@
   <ItemGroup>
     <None Include="Resources\ServerKeyLogsParser.exe" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

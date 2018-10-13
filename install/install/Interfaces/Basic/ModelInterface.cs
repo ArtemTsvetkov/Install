@@ -10,7 +10,6 @@ namespace install.Interfaces.Basic
     interface ModelInterface
     {
         void install();
-        void notifyObservers();
         void subscribe(Observer observer);
         //Просто устанавливает конфиг и все
         void setConfig(Config config);

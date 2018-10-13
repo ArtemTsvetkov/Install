@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using install.Interfaces;
+using install.Basic.ModelsParts.Types.TimeTypes;
+using install.Basic.ModelsParts.Types.ProgramTypes;
 
 namespace install.Basic
 {
@@ -19,52 +21,74 @@ namespace install.Basic
 
         public void initDataBase(SecurityUserInterface admin)
         {
-            throw new NotImplementedException();
+            Config config = new Config();
+            config.admin = admin.copy();
+            model.updateConfig(config);
         }
 
         public void install()
         {
-            throw new NotImplementedException();
+            model.install();
         }
 
         public void setAvevasPath(string path)
         {
-            throw new NotImplementedException();
+            Config config = new Config();
+            config.avevasPath = path;
+            model.updateConfig(config);
         }
 
         public void setConnectionString(string connection)
         {
-            throw new NotImplementedException();
+            Config config = new Config();
+            config.connection = connection;
+            model.updateConfig(config);
         }
 
-        public void setIntalledProgramType(bool isParser)
+        public void setInstalledProgramType(ProgramType programType)
         {
-            throw new NotImplementedException();
+            Config config = new Config();
+            config.programType = programType;
+            model.updateConfig(config);
         }
 
         public void setLastDate(string date)
         {
-            throw new NotImplementedException();
+            Config config = new Config();
+            config.date = date;
+            model.updateConfig(config);
         }
 
         public void setLogsPath(List<string> logs)
         {
-            throw new NotImplementedException();
+            Config config = new Config();
+            config.logs = new List<string>();
+            for(int i=0; i<logs.Count; i++)
+            {
+                config.logs.Add(logs.ElementAt(i));
+            }
+            model.updateConfig(config);
         }
 
         public void setProgramPath(string path)
         {
-            throw new NotImplementedException();
+            Config config = new Config();
+            config.programPath = path;
+            model.updateConfig(config);
         }
 
-        public void setTimeModidicatorType(bool isMinute)
+        public void setTimeModidicatorType(TimeType timeType)
         {
-            throw new NotImplementedException();
+            Config config = new Config();
+            config.timeType = timeType;
+            model.updateConfig(config);
         }
 
         public void setTimeModificator(int modificator)
         {
-            throw new NotImplementedException();
+            Config config = new Config();
+            config.modificator = modificator;
+            model.updateConfig(config);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace install.ExceptionHandler.Concrete
                 handler.addException(new NoDataBaseConnection());
                 handler.addException(new DatabaseQueryError());
                 handler.addException(new NoTableFound());
+                handler.addException(new FinishChain());
             }
             catch (Exception ex)
             {
