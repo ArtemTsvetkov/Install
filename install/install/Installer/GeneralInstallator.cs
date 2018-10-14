@@ -82,7 +82,7 @@ namespace install.Installer
             for (int i = 0; i < checkTables.Count; i++)
             {
                 if (!msSqlServerController.configAndExecute(currentState.config.connection,
-                "SELECT 1 FROM UST"))
+                checkTables.ElementAt(i)))
                 {
                     ready = false;
                     break;

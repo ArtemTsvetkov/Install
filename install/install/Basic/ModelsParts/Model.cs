@@ -60,11 +60,21 @@ namespace install.Basic.ModelsParts
             try
             {
                 modelsState.config = chainCreator.updateConfig(modelsState, config);
+                notifyObservers();
             }
             catch(Exception ex)
             {
                 ExceptionHandler.Concrete.ExceptionHandler.getInstance().processing(ex);
             }
+        }
+
+        public void initDataBase()
+        {
+            installer.createDatabaseTables(modelsState.config.connection);
+            installer.creatAdmin(modelsState.config.connection, 
+                modelsState.config.admin.getLogin(), modelsState.config.admin.getPassword());
+            modelsState.result = new Result(new OkType());
+            notifyObservers();
         }
     }
 }

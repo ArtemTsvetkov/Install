@@ -19,11 +19,16 @@ namespace install.Basic
             this.model = model;
         }
 
-        public void initDataBase(SecurityUserInterface admin)
+        public void initAdmin(SecurityUserInterface admin)
         {
             Config config = new Config();
             config.admin = admin.copy();
             model.updateConfig(config);
+        }
+
+        public void initDataBase()
+        {
+            model.initDataBase();
         }
 
         public void install()
@@ -77,17 +82,11 @@ namespace install.Basic
             model.updateConfig(config);
         }
 
-        public void setTimeModidicatorType(TimeType timeType)
-        {
-            Config config = new Config();
-            config.timeType = timeType;
-            model.updateConfig(config);
-        }
-
-        public void setTimeModificator(int modificator)
+        public void setTimeModificator(int modificator, TimeType timeType)
         {
             Config config = new Config();
             config.modificator = modificator;
+            config.timeType = timeType;
             model.updateConfig(config);
         }
     }

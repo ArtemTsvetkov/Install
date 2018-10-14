@@ -32,6 +32,7 @@ namespace install
     public partial class Form1 : Form
     {
         private ControllerInterface controller;
+        private Basic.View view;
 
         public Form1()
         {
@@ -45,7 +46,7 @@ namespace install
             //MVC
             //
             ModelInterface model = new Model();
-            Basic.View view = new Basic.View(this, model);
+            view = new Basic.View(this, model);
             controller = new Controller(model);
             //настройка переключателя
             tabControl1.Appearance = TabAppearance.FlatButtons;
@@ -60,12 +61,28 @@ namespace install
             radioButton3.Checked = true;
             checkBox2.Checked = true;
             button6.Enabled = false;
+            button28.Enabled = false;
             //добавление колонок в таблицу
             DataGridViewTextBoxColumn coefficient0;
             coefficient0 = new DataGridViewTextBoxColumn();
             coefficient0.Width = 363;
             coefficient0.HeaderText = "Пути к логам";
             dataGridView1.Columns.Add(coefficient0);
+        }
+
+        public void selectTab(int tabIndex)
+        {
+            tabControl1.SelectTab(tabIndex);
+        }
+
+        public Button button6Elem
+        {
+            get { return button6; }
+        }
+
+        public Button button28Elem
+        {
+            get { return button28; }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -76,7 +93,6 @@ namespace install
                 return;
             }
             textBox1.Text = folderBrowserDialog1.SelectedPath;
-            controller.setProgramPath(folderBrowserDialog1.SelectedPath);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -97,7 +113,7 @@ namespace install
                 }
                 if (no_errors == true)
                 {
-                    tabControl1.SelectTab(1);
+                    controller.setProgramPath(textBox1.Text);
                 }
                 else
                 {
@@ -120,39 +136,44 @@ namespace install
             result = MessageBox.Show(message, caption);
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void goOut()
         {
             Environment.Exit(0);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            goOut();
         }
 
         private void button11_Click(object sender, EventArgs e)
         {
-            tabControl1.SelectTab(1);
+            view.getPreviousTab();
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
-            tabControl1.SelectTab(0);
+            view.getPreviousTab();
         }
 
         private void button14_Click(object sender, EventArgs e)
         {
-            tabControl1.SelectTab(2);
+            view.getPreviousTab();
         }
 
         private void button12_Click(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            goOut();
         }
 
         private void button9_Click(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            goOut();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            goOut();
         }
 
         private void button10_Click(object sender, EventArgs e)
@@ -161,9 +182,6 @@ namespace install
             {
                 controller.setLastDate(dateTimePicker2.Text);
             }
-
-
-            tabControl1.SelectTab(3);
         }
 
         private void button8_Click(object sender, EventArgs e)
@@ -243,32 +261,31 @@ namespace install
 
         private void button17_Click(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            goOut();
         }
 
         private void button21_Click(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            goOut();
         }
 
         private void button22_Click(object sender, EventArgs e)
         {
-            tabControl1.SelectTab(3);
+            view.getPreviousTab();
         }
 
         private void button19_Click(object sender, EventArgs e)
         {
             if (radioButton1.Checked == true)
             {
-                controller.setTimeModidicatorType(new MinuteType());
+                controller.setTimeModificator(int.Parse(numericUpDown1.Value.ToString()), 
+                    new MinuteType());
             }
             else
             {
-                controller.setTimeModidicatorType(new HourType());
+                controller.setTimeModificator(int.Parse(numericUpDown1.Value.ToString()), 
+                    new HourType());
             }
-            controller.setTimeModificator(int.Parse(numericUpDown1.Value.ToString()));
-
-            tabControl1.SelectTab(5);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -280,8 +297,6 @@ namespace install
                 logs.Add(dataGridView1.Rows[i].Cells[0].Value.ToString());
             }
             controller.setLogsPath(logs);
-            
-            tabControl1.SelectTab(4);
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -316,12 +331,12 @@ namespace install
 
         private void button23_Click(object sender, EventArgs e)
         {
-            tabControl1.SelectTab(4);
+            view.getPreviousTab();
         }
 
         private void button20_Click(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            goOut();
         }
 
         private void radioButton4_Click(object sender, EventArgs e)
@@ -351,19 +366,35 @@ namespace install
 
         private void button25_Click(object sender, EventArgs e)
         {
-            controller.setInstalledProgramType(new ParserType());
-            tabControl1.SelectedIndex = 0;
+            List<int> map = new List<int>();
+            map.Add(7);
+            map.Add(0);
+            map.Add(1);
+            map.Add(1);
+            map.Add(2);
+            map.Add(3);
+            map.Add(4);
+            map.Add(5);
+            map.Add(5);
+            map.Add(6);
+            view.setMap(map);
+            button6.Visible = false;
+            button28.Visible = true;
+            controller.setInstalledProgramType(new ParserType()); 
         }
 
         private void button26_Click(object sender, EventArgs e)
         {
+            List<int> map = new List<int>();
+            map.Add(7);
+            map.Add(0);
+            map.Add(1);
+            map.Add(1);
+            map.Add(6);
+            view.setMap(map);
+            button6.Visible = true;
+            button28.Visible = false;
             controller.setInstalledProgramType(new AnalitycsType());
-            tabControl1.SelectedIndex = 0;
-        }
-
-        private void button27_Click(object sender, EventArgs e)
-        {
-            tabControl1.SelectedIndex = 7;
         }
 
         private void button8_Click_1(object sender, EventArgs e)
@@ -430,7 +461,7 @@ namespace install
 
         private void button31_Click(object sender, EventArgs e)
         {
-            tabControl1.SelectTab(1);
+            view.getPreviousTab();
         }
 
         private void button32_Click(object sender, EventArgs e)
@@ -441,9 +472,9 @@ namespace install
                 {
                     SecurityUserInterface admin = new SecurityUser(textBox7.Text, textBox8.Text);
                     admin.setAdmin(true);
-                    controller.initDataBase(admin);
+                    controller.initAdmin(admin);
+                    controller.initDataBase();
                     controller.install();
-                    tabControl1.SelectedIndex = 6;
                 }
                 else
                 {
@@ -464,7 +495,28 @@ namespace install
 
         private void button30_Click(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            goOut();
+        }
+
+        private void button27_Click(object sender, EventArgs e)
+        {
+            view.getPreviousTab();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            controller.install();
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            button6.Enabled = false;
+            button28.Enabled = false;
+        }
+
+        private void button28_Click(object sender, EventArgs e)
+        {
+            view.notify();
         }
     }
 }

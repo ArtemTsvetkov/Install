@@ -15,10 +15,10 @@ namespace install.Interfaces.Basic
         void setInstalledProgramType(ProgramType programType);
         void setLastDate(string date);
         void setLogsPath(List<string> logs);
-        void setTimeModidicatorType(TimeType timeType);
-        void setTimeModificator(int modificator);
+        void setTimeModificator(int modificator, TimeType timeType);
         void setAvevasPath(string path);
         void install();
-        void initDataBase(SecurityUserInterface admin);
+        void initAdmin(SecurityUserInterface admin);
+        void initDataBase();
     }
 }

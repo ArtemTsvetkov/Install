@@ -14,6 +14,11 @@ namespace install.Installer
     {
         private Product product;
 
+        public ConcreteIntallBuilder()
+        {
+            product = new Product();
+        }
+
         public void addConnectionString(string connectionString)
         {
             product.INI.Write("Settings", "connectionString", connectionString);

@@ -25,12 +25,12 @@ namespace install.Basic.ModelsParts.Chain.Concrete
                 if (controller.configAndCheckConnect(newConfig.connection))
                 {
                     modelsState.config.connection = newConfig.connection;
-                    modelsState.result = new Result(new OkType());
+                    modelsState.result = new Result(new ConnectionReadyType());
                     return modelsState.config;
                 }
                 else
                 {
-                    modelsState.result = new Result(new CancelType());
+                    modelsState.result = new Result(new ConnectionNotReadyType());
                     return modelsState.config;
                 }
             }

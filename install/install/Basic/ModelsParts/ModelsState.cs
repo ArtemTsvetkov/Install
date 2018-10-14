@@ -13,11 +13,17 @@ namespace install.Basic.ModelsParts
         public Config config;
         public Result result;
 
+        public ModelsState()
+        {
+            config = new Config();
+        }
+
         public ModelsState copy()
         {
             ModelsState copy = new ModelsState();
             copy.config = config.copy();
             copy.result = result;
+            copy.observers = observers;
 
             return copy;
         }

@@ -31,6 +31,10 @@ namespace install.Installer
         public void creatAdmin(string connectionString, string login, string password)
         {
             HashWorkerInterface<HashConfig> hashWorker = new HashWorker();
+            HashConfig hc = new HashConfig();
+            hc.numberOfHashing = 100000;
+            hc.sultLength = 20;
+            hashWorker.setConfig(hc);
             SecurityUserInterface user = new SecurityUser(login, password);
             user.setAdmin(true);
             string sult = hashWorker.getSult(user);

@@ -18,6 +18,7 @@ namespace install.Interfaces.Basic
         //Цепочка прервется при первом же читателе, который сможет
         //обработать новый конфиг
         void updateConfig(Config config);
+        void initDataBase();
         Result getResult();
     }
 }

@@ -29,10 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.button1 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.button27 = new System.Windows.Forms.Button();
@@ -40,7 +36,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button6 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label35 = new System.Windows.Forms.Label();
@@ -52,7 +53,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -130,6 +130,9 @@
             this.button30 = new System.Windows.Forms.Button();
             this.button31 = new System.Windows.Forms.Button();
             this.label42 = new System.Windows.Forms.Label();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.button28 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -143,44 +146,6 @@
             this.tabPage8.SuspendLayout();
             this.tabPage9.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(318, 109);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Обзор...";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Location = new System.Drawing.Point(24, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(238, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Программа установится в следующей папке.";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(44, 111);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(268, 20);
-            this.textBox1.TabIndex = 2;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.Transparent;
-            this.label2.Location = new System.Drawing.Point(41, 95);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(294, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Если вы хотите выбрать другую папку-нажмите \"Обзор\"";
             // 
             // tabControl1
             // 
@@ -273,10 +238,50 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Location = new System.Drawing.Point(24, 16);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(238, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Программа установится в следующей папке.";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(318, 109);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Обзор...";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(44, 111);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(268, 20);
+            this.textBox1.TabIndex = 2;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.BackColor = System.Drawing.Color.Transparent;
+            this.label2.Location = new System.Drawing.Point(41, 95);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(294, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Если вы хотите выбрать другую папку-нажмите \"Обзор\"";
+            // 
             // tabPage2
             // 
             this.tabPage2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("tabPage2.BackgroundImage")));
             this.tabPage2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.tabPage2.Controls.Add(this.button28);
+            this.tabPage2.Controls.Add(this.button6);
             this.tabPage2.Controls.Add(this.button8);
             this.tabPage2.Controls.Add(this.textBox6);
             this.tabPage2.Controls.Add(this.label35);
@@ -288,7 +293,6 @@
             this.tabPage2.Controls.Add(this.label5);
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.button5);
-            this.tabPage2.Controls.Add(this.button6);
             this.tabPage2.Controls.Add(this.button7);
             this.tabPage2.Controls.Add(this.label7);
             this.tabPage2.Controls.Add(this.textBox2);
@@ -301,9 +305,19 @@
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(180, 228);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 55;
+            this.button6.Text = "Установить";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(155, 194);
+            this.button8.Location = new System.Drawing.Point(162, 191);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(112, 23);
             this.button8.TabIndex = 28;
@@ -410,15 +424,6 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // button6
-            // 
-            this.button6.Location = new System.Drawing.Point(174, 228);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 23);
-            this.button6.TabIndex = 14;
-            this.button6.Text = "Далее";
-            this.button6.UseVisualStyleBackColor = true;
-            // 
             // button7
             // 
             this.button7.Location = new System.Drawing.Point(27, 228);
@@ -446,6 +451,7 @@
             this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(323, 20);
             this.textBox2.TabIndex = 11;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label8
             // 
@@ -1152,6 +1158,8 @@
             // 
             this.tabPage9.BackgroundImage = global::install.Properties.Resources.background;
             this.tabPage9.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.tabPage9.Controls.Add(this.label45);
+            this.tabPage9.Controls.Add(this.label44);
             this.tabPage9.Controls.Add(this.button32);
             this.tabPage9.Controls.Add(this.textBox9);
             this.tabPage9.Controls.Add(this.textBox8);
@@ -1237,7 +1245,7 @@
             // 
             this.label40.AutoSize = true;
             this.label40.BackColor = System.Drawing.Color.Transparent;
-            this.label40.Location = new System.Drawing.Point(27, 47);
+            this.label40.Location = new System.Drawing.Point(24, 74);
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(89, 13);
             this.label40.TabIndex = 43;
@@ -1278,11 +1286,41 @@
             // 
             this.label42.AutoSize = true;
             this.label42.BackColor = System.Drawing.Color.Transparent;
-            this.label42.Location = new System.Drawing.Point(26, 32);
+            this.label42.Location = new System.Drawing.Point(26, 59);
             this.label42.Name = "label42";
             this.label42.Size = new System.Drawing.Size(343, 13);
             this.label42.TabIndex = 39;
             this.label42.Text = "Введите логин и пароль для администратора, пароль может быть";
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.BackColor = System.Drawing.Color.Transparent;
+            this.label44.Location = new System.Drawing.Point(26, 25);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(338, 13);
+            this.label44.TabIndex = 55;
+            this.label44.Text = "Перед установкой необходимо создать структуру базы данных и";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.BackColor = System.Drawing.Color.Transparent;
+            this.label45.Location = new System.Drawing.Point(26, 42);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(134, 13);
+            this.label45.TabIndex = 56;
+            this.label45.Text = "аккаунт администратора";
+            // 
+            // button28
+            // 
+            this.button28.Location = new System.Drawing.Point(180, 228);
+            this.button28.Name = "button28";
+            this.button28.Size = new System.Drawing.Size(75, 23);
+            this.button28.TabIndex = 56;
+            this.button28.Text = "Далее";
+            this.button28.UseVisualStyleBackColor = true;
+            this.button28.Click += new System.EventHandler(this.button28_Click);
             // 
             // Form1
             // 
@@ -1334,7 +1372,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBox2;
@@ -1421,6 +1458,10 @@
         private System.Windows.Forms.Button button31;
         private System.Windows.Forms.Label label42;
         private System.Windows.Forms.Button button32;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.Button button28;
     }
 }
 
