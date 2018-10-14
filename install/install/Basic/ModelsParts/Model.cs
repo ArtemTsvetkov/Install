@@ -1,7 +1,9 @@
 ﻿using install.Basic.ModelsParts.Chain;
+using install.Basic.ModelsParts.Types.ResultTypes;
 using install.Installer;
 using install.Interfaces.Basic;
 using install.Interfaces.Installer;
+using install.WorkWithDataBase.MsSqlServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,7 @@ namespace install.Basic.ModelsParts
 
         public Model()
         {
+            modelsState = new ModelsState();
             modelsState.observers = new List<Observer>();
             installer = new ConcreteInstaller();
         }
@@ -28,16 +31,9 @@ namespace install.Basic.ModelsParts
 
         public void install()
         {
-            if(modelsState.config.programType.getType().Equals("AnalitycsType"))
-            {
-                installer.installAnalytics(modelsState.config.programPath,
-                    modelsState.config.connection);
-            }
-            else
-            {
-                Director installDirector = new Director(new ConcreteIntallBuilder());
-                installDirector.install(modelsState.config.copy());
-            }
+            GeneralInstallator generalInstallator = new GeneralInstallator(installer);
+            modelsState = generalInstallator.install(modelsState.copy());
+            notifyObservers();
         }
 
         public void notifyObservers()
@@ -61,10 +57,9 @@ namespace install.Basic.ModelsParts
         public void updateConfig(Config config)
         {
             ChainCreator chainCreator = new ChainCreator();
-            chainCreator.init();
             try
             {
-                modelsState.config = chainCreator.updateConfig(modelsState.config, config);
+                modelsState.config = chainCreator.updateConfig(modelsState, config);
             }
             catch(Exception ex)
             {

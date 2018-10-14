@@ -115,6 +115,7 @@
     <Compile Include="Installer\ConcreteInstaller.cs" />
     <Compile Include="Installer\ConcreteIntallBuilder.cs" />
     <Compile Include="Installer\Director.cs" />
+    <Compile Include="Installer\GeneralInstallator.cs" />
     <Compile Include="Installer\Product.cs" />
     <Compile Include="Interfaces\Basic\ControllerInterface.cs" />
     <Compile Include="Interfaces\Basic\ModelInterface.cs" />
