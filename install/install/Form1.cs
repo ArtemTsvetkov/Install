@@ -125,11 +125,6 @@ namespace install
             Environment.Exit(0);
         }
 
-        private void button6_Click(object sender, EventArgs e)
-        {
-            
-        }
-
         private void button11_Click(object sender, EventArgs e)
         {
             tabControl1.SelectTab(1);
@@ -191,18 +186,6 @@ namespace install
             }
             // получаем имя выбранного файла
             textBox3.Text = openFileDialog1.FileName;
-        }
-
-        private void copyFile(string fileNameWithType, byte[] fileFromResourses, 
-            string newFilesPath)
-        {
-            File.WriteAllBytes(@""+ newFilesPath+"\\" + fileNameWithType, fileFromResourses);
-        }
-
-        private void CopyFile(string sourcefn, string destinfn)
-        {
-            FileInfo fn = new FileInfo(sourcefn);
-            fn.CopyTo(destinfn, true);
         }
 
         private void button15_Click(object sender, EventArgs e)
@@ -329,144 +312,6 @@ namespace install
             {
                 showErrorMessage("Пожалуйста, введите путь для утилиты lsmon.");
             }
-            /*if ((radioButton4.Checked == true & textBox5.Text!="") | radioButton3.Checked == true)
-                try
-                {
-                    string last_record_s_time = "";
-                    string path_of_program;
-                    List<string> path_of_log_file = new List<string>();
-
-
-
-                    //обновление пути установки
-                    path_of_program = textBox1.Text;
-                    IniFiles INI = new IniFiles(path_of_program + "\\config.ini");
-
-                    //обновление даты последней записи в бд
-                    if (checkBox1.CheckState == CheckState.Unchecked)//если она существует
-                    {
-
-                        string date_time = dateTimePicker2.Text;
-                        string[] words = date_time.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                        string[] date = words[0].Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                        //удаление лишних нулей
-                        for (int i = 0; i < date.Count(); i++)
-                        {
-                            string a = date[i];
-                            if ((a.ElementAt(0).ToString().Equals("0")) & (a.Count() > 1))
-                            {
-                                date[i] = date[i].Remove(0, 1);
-                            }
-                        }
-                        string[] time = words[1].Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-                        //удаление лишних нулей
-                        for (int h = 0; h < time.Count(); h++)
-                        {
-                            string a = time[h];
-                            if ((a.ElementAt(0).ToString().Equals("0")) & (a.Count() > 1))
-                            {
-                                time[h] = time[h].Remove(0, 1);
-                            }
-                        }
-                        last_record_s_time = date[0] + "." + date[1] + "." + date[2] + "_" + time[0] + ":" + time[1] + ":0";
-                    }
-                    else
-                    {
-                        string date = DateTime.Today.Day.ToString()+"."+ 
-                            DateTime.Today.Month.ToString()+ "." +
-                            DateTime.Today.Year.ToString()+
-                            "_1:1:1";
-                        last_record_s_time = date;
-                    }
-
-
-                    //создание массива путей к логам
-                    for (int i = 0; i < dataGridView1.RowCount; i++)
-                    {
-                        path_of_log_file.Add(dataGridView1.Rows[i].Cells[0].Value.ToString());
-                    }
-
-                    //копирование файлов в новую дирректорию
-                    copyFile("ServerKeyLogsParser.exe", 
-                        Properties.Resources.ServerKeyLogsParser, path_of_program);
-
-
-                    //создание файла настроек и файла запуска приложения
-                    if(radioButton4.Checked == true)
-                    {
-                        //buf.Add(textBox5.Text + " PathAvevasParser");
-                        INI.Write("Settings", "pathAvevasParser", textBox5.Text);
-                    }
-                    for (int i = 0; i < path_of_log_file.Count(); i++)
-                    {
-                        if(i==0)
-                        {
-                            INI.Write("Settings", "pathOfLogFile", path_of_log_file.ElementAt(0));
-                            INI.Write("Settings", "lastDateOfLogFile", last_record_s_time);
-                        }
-                        else
-                        {
-                            INI.Write("Settings", "pathOfLogFile" + i.ToString(), 
-                                path_of_log_file.ElementAt(i));
-                            INI.Write("Settings", "lastDateOfLogFile"
-                                    + i.ToString(), last_record_s_time);
-                        }
-                    }
-
-                    INI.Write("Settings", "connectionString", textBox2.Text);
-
-                    ReadWriteTextFile rwtf = new ReadWriteTextFile();
-                    List<string> buf = new List<string>();
-                    buf.Add(@"@echo off");
-                    buf.Add("cd /d " + path_of_program);
-                    buf.Add(path_of_program + "\\ServerKeyLogsParser.exe");
-                    rwtf.Write_to_file(buf, path_of_program + "\\RunServerKeyLogsParser.bat", 0);
-
-
-                    buf.Clear();
-                    buf.Add(@"@echo off");
-                    buf.Add("cd /d " + textBox5.Text);
-                    buf.Add("lsmon aveva > "+ path_of_program + "\\output.txt");
-                    rwtf.Write_to_file(buf, path_of_program + "\\CreateAvevasLog.bat", 0);
-
-
-                    //создание задания для планировщика заданий
-                    string command;
-                    if (radioButton1.Checked == true)
-                    {
-                        command = @"/C SCHTASKS /Create /SC MINUTE /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
-                    }
-                    else
-                    {
-                        command = @"/C SCHTASKS /Create /SC HOURLY /MO " + numericUpDown1.Value + " /TR " + path_of_program + "\\RunServerKeyLogsParser.bat /TN FlexLMParser";
-                    }
-                    //в переменную check записываю значение только чтобы не создавать 
-                    //новую переменную, здесь просто лежит ответ командной строки
-                    WorkWithWindowsCommandLine wwwcl = new WorkWithWindowsCommandLine();
-                    string check = wwwcl.Run_command(command);
-                    if (check == "")
-                    {
-                        string message = "Не удалось создать задание для планировщика заданий.";
-                        string caption = "Ошибка";
-                        DialogResult result;
-                        result = MessageBox.Show(message, caption);
-                    }
-
-
-                    tabControl1.SelectTab(6);
-                }
-                catch (Exception ex)
-                {
-                    ReadWriteTextFile rwtf = new ReadWriteTextFile();
-                    List<string> buf = new List<string>();
-                    buf.Add("-----------------------------------------------");
-                    buf.Add("Module: Form1");
-                    DateTime thisDay = DateTime.Now;
-                    buf.Add("Time: " + thisDay.ToString());
-                    buf.Add("Exception: " + ex.Message);
-
-                    rwtf.Write_to_file(buf, Directory.GetCurrentDirectory() + "\\Errors.txt", 0);
-                }*/
         }
 
         private void button23_Click(object sender, EventArgs e)

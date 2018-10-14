@@ -1,4 +1,5 @@
-﻿using install.Exceptions;
+﻿using install.Basic.ModelsParts;
+using install.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace install.Basic.Model.Chain
     {
         private ConfigReader next;
 
-        public Config giveNext(Config modelConfig, Config newConfig)
+        public Config giveNext(ModelsState modelsState, Config newConfig)
         {
             if(next != null)
             {
-                return next.read(modelConfig, newConfig);
+                return next.read(modelsState, newConfig);
             }
             else
             {
@@ -23,7 +24,7 @@ namespace install.Basic.Model.Chain
             }
         }
 
-        abstract public Config read(Config modelConfig, Config newConfig);
+        abstract public Config read(ModelsState modelsState, Config newConfig);
 
         public void setNext(ConfigReader next)
         {

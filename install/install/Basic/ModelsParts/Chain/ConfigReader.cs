@@ -1,4 +1,5 @@
-﻿using System;
+﻿using install.Basic.ModelsParts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace install.Basic.Model.Chain
 {
     interface ConfigReader
     {
-        Config read(Config modelConfig, Config newConfig);
+        Config read(ModelsState modelsState, Config newConfig);
         void setNext(ConfigReader next);
-        Config giveNext(Config modelConfig, Config newConfig);
+        Config giveNext(ModelsState modelsState, Config newConfig);
     }
 }

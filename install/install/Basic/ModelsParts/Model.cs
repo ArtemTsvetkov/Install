@@ -1,4 +1,7 @@
-﻿using install.Interfaces.Basic;
+﻿using install.Basic.ModelsParts.Chain;
+using install.Installer;
+using install.Interfaces.Basic;
+using install.Interfaces.Installer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,37 +12,64 @@ namespace install.Basic.ModelsParts
 {
     class Model : ModelInterface
     {
-        private List<Observer> observers;
-        private Config config;
+        private ModelsState modelsState;
+        private InstallerInterface installer;
+
+        public Model()
+        {
+            modelsState.observers = new List<Observer>();
+            installer = new ConcreteInstaller();
+        }
 
         public Result getResult()
         {
-            throw new NotImplementedException();
+            return modelsState.result;
         }
 
         public void install()
         {
-            throw new NotImplementedException();
+            if(modelsState.config.programType.getType().Equals("AnalitycsType"))
+            {
+                installer.installAnalytics(modelsState.config.programPath,
+                    modelsState.config.connection);
+            }
+            else
+            {
+                Director installDirector = new Director(new ConcreteIntallBuilder());
+                installDirector.install(modelsState.config.copy());
+            }
         }
 
         public void notifyObservers()
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < modelsState.observers.Count; i++)
+            {
+                modelsState.observers.ElementAt(i).notify();
+            }
         }
 
         public void setConfig(Config config)
         {
-            throw new NotImplementedException();
+            modelsState.config = config.copy();
         }
 
         public void subscribe(Observer observer)
         {
-            throw new NotImplementedException();
+            modelsState.observers.Add(observer);
         }
 
         public void updateConfig(Config config)
         {
-            throw new NotImplementedException();
+            ChainCreator chainCreator = new ChainCreator();
+            chainCreator.init();
+            try
+            {
+                modelsState.config = chainCreator.updateConfig(modelsState.config, config);
+            }
+            catch(Exception ex)
+            {
+                ExceptionHandler.Concrete.ExceptionHandler.getInstance().processing(ex);
+            }
         }
     }
 }
