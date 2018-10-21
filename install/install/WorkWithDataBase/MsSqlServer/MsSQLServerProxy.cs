@@ -36,64 +36,23 @@ namespace install.WorkWithDataBase.MsSqlServer
         //если запрос выполнился, значит подключение есть
         public bool connect()
         {
-            if (config.getQuery() == null)
-            {
-                string connStr = string.Format(config.getConnectionString());
-                OleDbConnection conn;
-                conn = null;
+            string connStr = string.Format(config.getConnectionString());
+            OleDbConnection conn;
+            conn = null;
 
-                try
-                {
-                    conn = new OleDbConnection(connStr);
-                    conn.Open();
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    throw new NoDataBaseConnection("There is no database connection");
-                }
-                finally
-                {
-                    if (conn != null) conn.Close();
-                }
+            try
+            {
+                conn = new OleDbConnection(connStr);
+                conn.Open();
+                return true;
             }
-            else
+            catch (Exception ex)
             {
-                List<string> currentQuerys = new List<string>();
-                currentQuerys.Add("SELECT 1 FROM Vendor");
-                string connStr = string.Format(config.getConnectionString());
-                DataSet dataSet = new DataSet();
-                OleDbConnection conn;
-                conn = null;
-
-                try
-                {
-                    conn = new OleDbConnection(connStr);
-                    conn.Open();
-                    for (int i = 0; i < currentQuerys.Count; i++)
-                    {
-                        try
-                        {
-                            OleDbDataAdapter adapter = new OleDbDataAdapter(currentQuerys.ElementAt(i),
-                                conn);
-                            adapter.Fill(dataSet, selectTableNameFromQuery(currentQuerys.ElementAt(i)));
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new DatabaseQueryError("Database query error. Query:" +
-                                    currentQuerys.ElementAt(i));
-                        }
-                    }
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    throw new NoDataBaseConnection("There is no database connection");
-                }
-                finally
-                {
-                    if (conn != null) conn.Close();
-                }
+                throw new NoDataBaseConnection("There is no database connection");
+            }
+            finally
+            {
+                if (conn != null) conn.Close();
             }
         }
 

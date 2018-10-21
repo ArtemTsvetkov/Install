@@ -8,7 +8,6 @@ namespace install.Interfaces.Installer
 {
     interface InstallerInterface
     {
-        void installParser(string programsPath, string connectionString);
         void installAnalytics(string programsPath, string connectionString);
         void createDatabaseTables(string connectionString);
         void creatAdmin(string connectionString, string login, string password);
