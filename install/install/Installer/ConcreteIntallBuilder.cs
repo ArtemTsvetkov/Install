@@ -141,13 +141,6 @@ namespace install.Installer
         public void turnOnAveva(string pathAvevaParser, string programsPath)
         {
             product.INI.Write("Settings", "pathAvevasParser", pathAvevaParser);
-
-            ReadWriteTextFile rwtf = new ReadWriteTextFile();
-            List<string> buf = new List<string>();
-            buf.Add(@"@echo off");
-            buf.Add("cd /d " + pathAvevaParser);
-            buf.Add("lsmon aveva > " + programsPath + "\\output.txt");
-            rwtf.Write_to_file(buf, programsPath + "\\CreateAvevasLog.bat", 0);
         }
 
         private void copyFile(string fileNameWithType, byte[] fileFromResourses,
