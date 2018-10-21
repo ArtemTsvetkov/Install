@@ -182,6 +182,12 @@ namespace install
             {
                 controller.setLastDate(dateTimePicker2.Text);
             }
+            else
+            {
+                string current = DateTime.Now.ToShortDateString() + " " +
+                    DateTime.Now.ToShortTimeString(); 
+                controller.setLastDate(current);
+            }
         }
 
         private void button8_Click(object sender, EventArgs e)
@@ -321,7 +327,15 @@ namespace install
         {
             if ((radioButton4.Checked == true & textBox5.Text != "") | radioButton3.Checked == true)
             {
-                controller.install();
+                if(radioButton3.Checked == true & dataGridView1.RowCount == 0)
+                {
+                    showErrorMessage("Пожалуйста, введите путь для утилиты lsmon или добавьте"+
+                        " на предыдущей вкладке хотя бы 1 log-файл");
+                }
+                else
+                {
+                    controller.install();
+                }
             }
             else
             {

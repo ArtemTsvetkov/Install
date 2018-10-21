@@ -188,10 +188,10 @@
     <None Include="Resources\background1.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Analytics.exe" />
+    <None Include="Resources\ServerKeyLogsParser.exe" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ServerKeyLogsParser.exe" />
+    <None Include="Resources\Analytics.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
